@@ -281,7 +281,7 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.getCanvas = function () {
         return document.createElement('canvas');
     };
-    /** @mime - null=png . Also accepts image/jpeg */
+    /** returns promise . @mime - null=png . Also accepts image/jpeg */
     WebCamComponent.prototype.getBase64 = function (mime) {
         if (this.isFallback) {
             return this.getFallbackBase64(mime);

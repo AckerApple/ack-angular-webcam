@@ -80,7 +80,7 @@ export declare class WebCamComponent {
     drawImageArrayToCanvas(imgArray: any): HTMLCanvasElement;
     ngOnDestroy(): void;
     getCanvas(): HTMLCanvasElement;
-    /** @mime - null=png . Also accepts image/jpeg */
+    /** returns promise . @mime - null=png . Also accepts image/jpeg */
     getBase64(mime?: any): Promise<any>;
     getFallbackBase64(mime: any): Promise<any>;
     setCanvasWidth(canvas?: any, video?: any): void;

@@ -10,7 +10,6 @@ out/
 dist/
 docs/
 ts-node/
-*.log
 
 
 # Logs
