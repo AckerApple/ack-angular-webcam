@@ -1,0 +1,32 @@
+{
+  "name": "ack-angular-webcam",
+  "version": "1.2.4",
+  "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
+  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ackerapple/ack-angular-webcam.git"
+  },
+  "keywords": [
+    "ng2",
+    "angular2",
+    "getusermedia",
+    "webcam",
+    "video",
+    "gum"
+  ],
+  "author": "Akcer Apple",
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/ackerapple/ack-angular-webcam/issues"
+  },
+  "homepage": "https://github.com/ackerapple/ack-angular-webcam#readme",
+  "directories": {
+    "example": "example"
+  },
+  "license": "MIT"
+}
