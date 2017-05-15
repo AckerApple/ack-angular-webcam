@@ -1,3 +1,18 @@
+example/www/
+aot/
+.DS_Store
+styles.css.map
+updaters/
+.com.google.*
+.idea
+**/node_modules/
+out/
+dist/
+docs/
+ts-node/
+*.log
+
+
 # Logs
 logs
 *.log
