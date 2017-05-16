@@ -7,7 +7,7 @@ const template=`
       &nbsp;
     </td>
     <td [ngStyle]="{width:captured?'50%':'100%'}">
-      <ack-webcam [(ref)]="webcam" [options]="options" [onSuccess]="onSuccess" [onError]="onError" style="width:100%;height:100%;display:block;"></ack-webcam>
+      <ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onSuccess($event)" (onError)="onError($event)" style="width:100%;height:100%;display:block;"></ack-webcam>
     </td>
   </tr>
   <tr *ngIf="showBase64" style="height:60px">
@@ -35,8 +35,6 @@ const template=`
   base64:any
   error: any;
   options: any;
-  onSuccess: Function;
-  onError: Function;
 
   constructor(private element: ElementRef) {
     this.options = {
@@ -49,14 +47,15 @@ const template=`
       fallbackSrc: 'jscam_canvas_only.swf'
     };
     
-    this.onSuccess = (stream: any) => {
-      console.log('capturing video stream');
-    };
-    
-    this.onError = (err) => {
-      console.log(err);
-    };
   }
+
+  onSuccess(stream: any){
+    console.log('capturing video stream');
+  };
+  
+  onError(err){
+    console.log(err);
+  };
 
   captureBase64(){
     return this.webcam.getBase64()

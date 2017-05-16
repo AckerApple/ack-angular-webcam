@@ -38,10 +38,11 @@ export declare class WebCamComponent {
     ref: any;
     refChange: EventEmitter<{}>;
     options: Options;
-    onSuccess: Function;
-    onError: Function;
+    onSuccess: EventEmitter<{}>;
+    onError: EventEmitter<{}>;
     constructor(sanitizer: DomSanitizer, element: ElementRef);
     ngAfterViewInit(): void;
+    afterInitCycles(): void;
     applyDefaults(): void;
     /**
      * Switch to facing mode and setup web camera
@@ -50,8 +51,8 @@ export declare class WebCamComponent {
     onWebRTC(): any;
     resizeVideo(): void;
     getVideoDimensions(video: any): {
-        width: any;
-        height: any;
+        width: number;
+        height: number;
     };
     getVideoElm(): any;
     /**

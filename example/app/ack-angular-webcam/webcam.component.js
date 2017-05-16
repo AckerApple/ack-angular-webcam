@@ -11,11 +11,17 @@ var WebCamComponent = (function () {
         this.sanitizer = sanitizer;
         this.element = element;
         this.refChange = new core_1.EventEmitter();
+        this.onSuccess = new core_1.EventEmitter();
+        this.onError = new core_1.EventEmitter();
         this.isFallback = false;
         this.isSupportWebRTC = false;
         this.browser = navigator;
     }
     WebCamComponent.prototype.ngAfterViewInit = function () {
+        var _this = this;
+        setTimeout(function () { return _this.afterInitCycles(); }, 0);
+    };
+    WebCamComponent.prototype.afterInitCycles = function () {
         var _this = this;
         // getUserMedia() feature detection for older browser
         this.browser.getUserMedia_ = (this.browser.getUserMedia
@@ -50,9 +56,10 @@ var WebCamComponent = (function () {
         this.onResize = function () { this.resizeVideo(); }.bind(this);
         window.addEventListener('resize', this.onResize);
         this.startCapturingVideo();
-        setTimeout(function () { return _this.onResize(); }, 0);
+        this.onResize();
     };
     WebCamComponent.prototype.applyDefaults = function () {
+        this.options = this.options || {};
         // default options
         this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
         this.options.fallbackMode = this.options.fallbackMode || 'callback';
@@ -62,6 +69,9 @@ var WebCamComponent = (function () {
         this.options.cameraType = this.options.cameraType || 'front';
         // flash fallback detection
         this.isFallback = this.options.fallback || (!this.isSupportWebRTC && !!this.options.fallbackSrc);
+        if (!this.options.video && !this.options.audio) {
+            this.options.video = true;
+        }
     };
     /**
      * Switch to facing mode and setup web camera
@@ -93,21 +103,31 @@ var WebCamComponent = (function () {
             return;
         video.width = 0;
         video.height = 0;
-        video.width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10);
-        video.height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10);
+        var width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10);
+        var height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10);
+        if (!width || !height) {
+            width = 320;
+            height = 240;
+        }
+        video.width = width;
+        video.height = height;
     };
     WebCamComponent.prototype.getVideoDimensions = function (video) {
         video = video || this.getVideoElm();
+        var dim = { width: 0, height: 0 };
         if (video.videoWidth) {
-            return {
-                width: video.videoWidth,
-                height: video.videoHeight
-            };
+            dim.width = video.videoWidth;
+            dim.height = video.videoHeight;
         }
-        return {
-            width: this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10),
-            height: this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
-        };
+        else {
+            dim.width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10);
+            dim.height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10);
+        }
+        if (!dim.width)
+            dim.width = 320;
+        if (!dim.height)
+            dim.height = 240;
+        return dim;
     };
     WebCamComponent.prototype.getVideoElm = function () {
         var elmType = this.isFallback ? 'object' : 'video';
@@ -165,7 +185,7 @@ var WebCamComponent = (function () {
             _this.videoSrc = _this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
             _this.processSuccess(stream);
         }).catch(function (err) {
-            _this.onError(err);
+            _this.onError.emit(err);
         });
     };
     WebCamComponent.prototype.processSuccess = function (stream) {
@@ -173,7 +193,7 @@ var WebCamComponent = (function () {
             this.setupFallback();
         }
         else {
-            this.onSuccess(stream);
+            this.onSuccess.emit(stream);
         }
     };
     /**
@@ -217,10 +237,10 @@ var WebCamComponent = (function () {
             this.addFallbackParams(cam_1);
             (function register(run) {
                 if (cam_1.capture !== undefined) {
-                    self_1.onSuccess(cam_1);
+                    self_1.onSuccess.emit(cam_1);
                 }
                 else if (run === 0) {
-                    self_1.onError(new Error('Flash movie not yet registered!'));
+                    self_1.onError.emit(new Error('Flash movie not yet registered!'));
                 }
                 else {
                     // Flash interface not ready yet
@@ -350,8 +370,8 @@ WebCamComponent.propDecorators = {
     'ref': [{ type: core_1.Input },],
     'refChange': [{ type: core_1.Output },],
     'options': [{ type: core_1.Input },],
-    'onSuccess': [{ type: core_1.Input },],
-    'onError': [{ type: core_1.Input },],
+    'onSuccess': [{ type: core_1.Output },],
+    'onError': [{ type: core_1.Output },],
 };
 exports.WebCamComponent = WebCamComponent;
 //# sourceMappingURL=webcam.component.js.map

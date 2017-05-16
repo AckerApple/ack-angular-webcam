@@ -1,6 +1,8 @@
 # ack-angular-webcam
 A cross-browser angular2 component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available.
 
+[Demo Page](https://ackerapple.github.io/ack-angular-webcam/)
+
 ### Table of Contents
 
 - [Screenshot](#screenshot)
@@ -60,7 +62,7 @@ export default AppModule;
 app.component.ts
 ```javascript
 const template = `
-<ack-webcam [(ref)]="webcam" [options]="options" [onSuccess]="onSuccess" [onError]="onError"></ack-webcam>
+<ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onSuccess($event)" (onError)="onError($event)"></ack-webcam>
 <button (click)="genBase64()"> generate base64 </button>
 `
 

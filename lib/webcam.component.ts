@@ -55,8 +55,8 @@ export interface MediaDevice {
   @Output() refChange = new EventEmitter()
   
   @Input() options: Options;
-  @Input() onSuccess: Function;
-  @Input() onError: Function;
+  @Output() onSuccess = new EventEmitter()
+  @Output() onError = new EventEmitter()
 
   constructor(private sanitizer: DomSanitizer, private element: ElementRef) {
     this.isFallback = false;
@@ -65,6 +65,10 @@ export interface MediaDevice {
   }
 
   ngAfterViewInit() {
+    setTimeout(()=>this.afterInitCycles(), 0)
+  }
+  
+  afterInitCycles(){
     // getUserMedia() feature detection for older browser
     this.browser.getUserMedia_ = (this.browser.getUserMedia
     || this.browser.webkitGetUserMedia
@@ -109,10 +113,11 @@ export interface MediaDevice {
 
     this.startCapturingVideo();
 
-    setTimeout(()=>this.onResize(), 0)
+    this.onResize()
   }
 
   applyDefaults(){
+    this.options = this.options || <Options>{}
     // default options
     this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
     this.options.fallbackMode = this.options.fallbackMode || 'callback';
@@ -122,6 +127,10 @@ export interface MediaDevice {
     this.options.cameraType = this.options.cameraType  || 'front';
     // flash fallback detection
     this.isFallback = this.options.fallback || (!this.isSupportWebRTC && !!this.options.fallbackSrc)
+
+    if(!this.options.video && !this.options.audio){
+      this.options.video = true
+    }
   }
 
   /**
@@ -156,24 +165,34 @@ export interface MediaDevice {
     video.width = 0;
     video.height = 0;
     
-    video.width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10)
-    video.height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
+    let width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10)
+    let height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
+
+    if(!width || !height){
+      width = 320
+      height = 240
+    }
+
+    video.width = width
+    video.height = height
   }
 
   getVideoDimensions(video){
     video = video || this.getVideoElm()
+    const dim = {width:0, height:0}
 
     if(video.videoWidth){
-      return {
-        width:video.videoWidth,
-        height:video.videoHeight
-      }
+      dim.width = video.videoWidth
+      dim.height = video.videoHeight
+    }else{
+      dim.width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10)
+      dim.height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
     }
 
-    return {
-      width:this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10),
-      height:this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
-    }
+    if(!dim.width)dim.width = 320
+    if(!dim.height)dim.height = 240
+
+    return dim
   }
 
   getVideoElm(){
@@ -237,7 +256,7 @@ export interface MediaDevice {
       this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
       this.processSuccess(stream)
     }).catch((err) => {
-      this.onError(err);
+      this.onError.emit(err);
     });
   }
 
@@ -245,7 +264,7 @@ export interface MediaDevice {
     if (this.isFallback) {
       this.setupFallback()
     }else{
-      this.onSuccess(stream)
+      this.onSuccess.emit(stream)
     }
   }
 
@@ -295,9 +314,9 @@ export interface MediaDevice {
 
       (function register(run) {
         if (cam.capture !== undefined) {
-          self.onSuccess(cam);
+          self.onSuccess.emit(cam);
         } else if (run === 0) {
-          self.onError(new Error('Flash movie not yet registered!'));
+          self.onError.emit(new Error('Flash movie not yet registered!'));
         } else {
           // Flash interface not ready yet
           window.setTimeout(register, 1000 * (4 - run), run - 1);
