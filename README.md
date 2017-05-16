@@ -62,7 +62,7 @@ export default AppModule;
 app.component.ts
 ```javascript
 const template = `
-<ack-webcam [(ref)]="webcam" [options]="options" [onSuccess]="onSuccess" [onError]="onError"></ack-webcam>
+<ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onSuccess($event)" (onError)="onError($event)"></ack-webcam>
 <button (click)="genBase64()"> generate base64 </button>
 `
 
