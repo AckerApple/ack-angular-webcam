@@ -35,6 +35,7 @@ export declare class WebCamComponent {
     browser: any;
     observer: any;
     onResize: any;
+    stream: any;
     ref: any;
     refChange: EventEmitter<{}>;
     options: Options;
@@ -89,4 +90,14 @@ export declare class WebCamComponent {
      * Implement fallback external interface
      */
     setupFallback(): void;
+    captureAsFormData(options?: {
+        mime?: string;
+        fileName?: string;
+        form?: FormData;
+    }): Promise<FormData>;
 }
+export declare function dataUriToFormData(dataURI: any, options?: {
+    fileName?: string;
+    form?: FormData;
+}): FormData;
+export declare function dataUriToBlob(dataURI: any): Blob;

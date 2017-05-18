@@ -44,7 +44,12 @@ var WebCamComponent = (function () {
         }
         this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
         this.applyDefaults();
-        this.ref = Object.assign(this, this.ref);
+        this.ref = Object.assign(this, this.ref, {
+            element: this.element,
+            options: this.options,
+            onSuccess: this.onSuccess,
+            onError: this.onError
+        });
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.observer = new MutationObserver(function () { return _this.resizeVideo(); });
         var config = {
@@ -184,6 +189,7 @@ var WebCamComponent = (function () {
             var webcamUrl = URL.createObjectURL(stream);
             _this.videoSrc = _this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
             _this.processSuccess(stream);
+            _this.stream = stream;
         }).catch(function (err) {
             _this.onError.emit(err);
         });
@@ -297,6 +303,13 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.ngOnDestroy = function () {
         this.observer.disconnect();
         window.removeEventListener(this.onResize);
+        var vid = this.getVideoElm();
+        if (vid && vid.pause) {
+            vid.pause();
+        }
+        if (this.stream) {
+            this.stream.getTracks()[0].stop();
+        }
     };
     WebCamComponent.prototype.getCanvas = function () {
         return document.createElement('canvas');
@@ -353,6 +366,11 @@ var WebCamComponent = (function () {
             }
         };
     };
+    WebCamComponent.prototype.captureAsFormData = function (options) {
+        options = options || {};
+        return this.getBase64(options.mime)
+            .then(function (base64) { return dataUriToFormData(base64, { fileName: options.fileName }); });
+    };
     return WebCamComponent;
 }());
 WebCamComponent.decorators = [
@@ -374,4 +392,30 @@ WebCamComponent.propDecorators = {
     'onError': [{ type: core_1.Output },],
 };
 exports.WebCamComponent = WebCamComponent;
+function dataUriToFormData(dataURI, options) {
+    options = options || {};
+    options.form = options.form || new FormData();
+    options.form.append('file', dataUriToBlob(dataURI), options.fileName || 'file.jpg');
+    return options.form;
+}
+exports.dataUriToFormData = dataUriToFormData;
+function dataUriToBlob(dataURI) {
+    // convert base64/URLEncoded data component to raw binary data held in a string
+    var byteString;
+    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
+        byteString = atob(dataURI.split(',')[1]);
+    }
+    else {
+        byteString = window['unescape'](dataURI.split(',')[1]);
+    }
+    // separate out the mime component
+    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    // write the bytes of the string to a typed array
+    var ia = new Uint8Array(byteString.length);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ia], { type: mimeString });
+}
+exports.dataUriToBlob = dataUriToBlob;
 //# sourceMappingURL=webcam.component.js.map

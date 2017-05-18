@@ -1,8 +1,9 @@
 {
   "name": "ack-angular-webcam",
-  "version": "1.2.7",
+  "version": "1.2.10",
   "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
-  "main": "index.ts",
+  "main": "index.js",
+  "typings": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ackerapple/ack-angular-webcam.git"
