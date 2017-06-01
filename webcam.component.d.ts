@@ -36,6 +36,7 @@ export declare class WebCamComponent {
     observer: any;
     onResize: any;
     stream: any;
+    mime: string;
     ref: any;
     refChange: EventEmitter<{}>;
     options: Options;
@@ -84,7 +85,7 @@ export declare class WebCamComponent {
     getCanvas(): HTMLCanvasElement;
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     getBase64(mime?: any): Promise<any>;
-    getFallbackBase64(mime: any): Promise<any>;
+    getFallbackBase64(mime?: any): Promise<any>;
     setCanvasWidth(canvas?: any, video?: any): void;
     /**
      * Implement fallback external interface
@@ -95,9 +96,9 @@ export declare class WebCamComponent {
         fileName?: string;
         form?: FormData;
     }): Promise<FormData>;
+    dataUriToFormData(dataURI: any, options?: {
+        fileName?: string;
+        form?: FormData;
+    }): FormData;
 }
-export declare function dataUriToFormData(dataURI: any, options?: {
-    fileName?: string;
-    form?: FormData;
-}): FormData;
 export declare function dataUriToBlob(dataURI: any): Blob;
