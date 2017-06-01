@@ -51,6 +51,8 @@ export interface MediaDevice {
   public observer
   public onResize
   public stream
+  
+  @Input() public mime='image/jpeg'
 
   @Input() ref
   @Output() refChange = new EventEmitter()
@@ -416,14 +418,16 @@ export interface MediaDevice {
     }
   }
 
-  getFallbackBase64(mime){
+  getFallbackBase64(mime?){
+    mime = mime || this.mime
+
     return new Promise((res,rej)=>{
       this.flashPlayer.onImage = img=>{
         res(img)
       }
       this.getVideoElm().capture()
     })
-    .then( canvas=>canvas['toDataURL'](mime) )
+    .then( (canvas:{toDataURL:Function})=>canvas.toDataURL(mime) )
   }
 
   setCanvasWidth(canvas?, video?){
@@ -461,16 +465,17 @@ export interface MediaDevice {
   captureAsFormData(options?:{mime?:string, fileName?:string, form?:FormData}){
     options = options || {}
     return this.getBase64(options.mime)
-    .then( base64=>dataUriToFormData(base64, {fileName:options.fileName}) )
+    .then( base64=>this.dataUriToFormData(base64, {fileName:options.fileName}) )
+  }
+  
+  dataUriToFormData(dataURI, options?:{fileName?:string, form?:FormData}){
+    options = options || {}
+    options.form = options.form || new FormData()
+    options.form.append('file', dataUriToBlob(dataURI), options.fileName||'file.jpg');
+    return options.form
   }
 }
 
-export function dataUriToFormData(dataURI, options?:{fileName?:string, form?:FormData}){
-  options = options || {}
-  options.form = options.form || new FormData()
-  options.form.append('file', dataUriToBlob(dataURI), options.fileName||'file.jpg');
-  return options.form
-}
 
 export function dataUriToBlob(dataURI) {
   // convert base64/URLEncoded data component to raw binary data held in a string

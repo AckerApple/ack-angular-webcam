@@ -10,6 +10,7 @@ var WebCamComponent = (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
+        this.mime = 'image/jpeg';
         this.refChange = new core_1.EventEmitter();
         this.onSuccess = new core_1.EventEmitter();
         this.onError = new core_1.EventEmitter();
@@ -329,13 +330,14 @@ var WebCamComponent = (function () {
     };
     WebCamComponent.prototype.getFallbackBase64 = function (mime) {
         var _this = this;
+        mime = mime || this.mime;
         return new Promise(function (res, rej) {
             _this.flashPlayer.onImage = function (img) {
                 res(img);
             };
             _this.getVideoElm().capture();
         })
-            .then(function (canvas) { return canvas['toDataURL'](mime); });
+            .then(function (canvas) { return canvas.toDataURL(mime); });
     };
     WebCamComponent.prototype.setCanvasWidth = function (canvas, video) {
         var di = this.getVideoDimensions(video);
@@ -367,9 +369,16 @@ var WebCamComponent = (function () {
         };
     };
     WebCamComponent.prototype.captureAsFormData = function (options) {
+        var _this = this;
         options = options || {};
         return this.getBase64(options.mime)
-            .then(function (base64) { return dataUriToFormData(base64, { fileName: options.fileName }); });
+            .then(function (base64) { return _this.dataUriToFormData(base64, { fileName: options.fileName }); });
+    };
+    WebCamComponent.prototype.dataUriToFormData = function (dataURI, options) {
+        options = options || {};
+        options.form = options.form || new FormData();
+        options.form.append('file', dataUriToBlob(dataURI), options.fileName || 'file.jpg');
+        return options.form;
     };
     return WebCamComponent;
 }());
@@ -385,6 +394,7 @@ WebCamComponent.ctorParameters = function () { return [
     { type: core_1.ElementRef, },
 ]; };
 WebCamComponent.propDecorators = {
+    'mime': [{ type: core_1.Input },],
     'ref': [{ type: core_1.Input },],
     'refChange': [{ type: core_1.Output },],
     'options': [{ type: core_1.Input },],
@@ -392,13 +402,6 @@ WebCamComponent.propDecorators = {
     'onError': [{ type: core_1.Output },],
 };
 exports.WebCamComponent = WebCamComponent;
-function dataUriToFormData(dataURI, options) {
-    options = options || {};
-    options.form = options.form || new FormData();
-    options.form.append('file', dataUriToBlob(dataURI), options.fileName || 'file.jpg');
-    return options.form;
-}
-exports.dataUriToFormData = dataUriToFormData;
 function dataUriToBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;
