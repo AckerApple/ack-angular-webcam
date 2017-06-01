@@ -101,5 +101,6 @@
     "example": "example"
   },
   "dependencies": {},
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }
