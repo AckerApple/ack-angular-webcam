@@ -64,6 +64,7 @@ app.component.ts
 const template = `
 <ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onCamSuccess($event)" (onError)="onCamError($event)"></ack-webcam>
 <button (click)="genBase64()"> generate base64 </button>
+<button (click)="genPostData()"> generate post data </button>
 `
 
 @Component({
@@ -76,6 +77,12 @@ const template = `
   genBase64(){
     this.webcam.getBase64()
     .then( base=>this.base64=base)
+    .catch( e=>console.error(e) )
+  }
+
+  genPostData(){
+    this.webcam.captureAsFormData({fileName:'file.jpg'})
+    .then( FormData=>console.log(FormData))
     .catch( e=>console.error(e) )
   }
 

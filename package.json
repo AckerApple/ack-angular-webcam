@@ -1,8 +1,9 @@
 {
   "name": "ack-angular-webcam",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.config.js --hot --progress --colors --port 3000",
     "test": "karma start",

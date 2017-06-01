@@ -50,6 +50,7 @@ export interface MediaDevice {
   public browser: any;
   public observer
   public onResize
+  public stream
 
   @Input() ref
   @Output() refChange = new EventEmitter()
@@ -67,7 +68,7 @@ export interface MediaDevice {
   ngAfterViewInit() {
     setTimeout(()=>this.afterInitCycles(), 0)
   }
-  
+
   afterInitCycles(){
     // getUserMedia() feature detection for older browser
     this.browser.getUserMedia_ = (this.browser.getUserMedia
@@ -94,7 +95,12 @@ export interface MediaDevice {
     this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
     this.applyDefaults()
 
-    this.ref = Object.assign(this,this.ref)
+    this.ref = Object.assign(this, this.ref, {
+      element:this.element,
+      options:this.options,
+      onSuccess:this.onSuccess,
+      onError:this.onError
+    })
     setTimeout(()=>this.refChange.emit(this), 0)
 
     this.observer = new MutationObserver( ()=>this.resizeVideo() )
@@ -255,6 +261,7 @@ export interface MediaDevice {
       let webcamUrl = URL.createObjectURL(stream);
       this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
       this.processSuccess(stream)
+      this.stream = stream
     }).catch((err) => {
       this.onError.emit(err);
     });
@@ -380,6 +387,16 @@ export interface MediaDevice {
   ngOnDestroy(){
     this.observer.disconnect()
     window.removeEventListener(this.onResize)
+
+    const vid = this.getVideoElm()
+
+    if(vid && vid.pause){
+      vid.pause()
+    }
+
+    if(this.stream){
+      this.stream.getTracks()[0].stop();
+    }
   }
 
   getCanvas(){
@@ -440,4 +457,36 @@ export interface MediaDevice {
       }
     }
   }
+
+  captureAsFormData(options?:{mime?:string, fileName?:string, form?:FormData}){
+    options = options || {}
+    return this.getBase64(options.mime)
+    .then( base64=>dataUriToFormData(base64, {fileName:options.fileName}) )
+  }
+}
+
+export function dataUriToFormData(dataURI, options?:{fileName?:string, form?:FormData}){
+  options = options || {}
+  options.form = options.form || new FormData()
+  options.form.append('file', dataUriToBlob(dataURI), options.fileName||'file.jpg');
+  return options.form
+}
+
+export function dataUriToBlob(dataURI) {
+  // convert base64/URLEncoded data component to raw binary data held in a string
+  var byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0){
+    byteString = atob(dataURI.split(',')[1]);
+  }else{
+    byteString = window['unescape'](dataURI.split(',')[1]);
+  }
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  // write the bytes of the string to a typed array
+  var ia = new Uint8Array(byteString.length);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ia], {type:mimeString});
 }
