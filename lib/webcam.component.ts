@@ -111,7 +111,7 @@ export interface MediaDevice {
       attributes: true,
       childList: true,
       characterData: true,
-      //subtree: true
+      // subtree: true
     }
     this.observer.observe(this.element.nativeElement, config);
 
@@ -130,8 +130,8 @@ export interface MediaDevice {
     this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
     this.options.fallbackMode = this.options.fallbackMode || 'callback';
     this.options.fallbackQuality = this.options.fallbackQuality || 200;
-    //this.options.width = this.options.width || 320;
-    //this.options.height = this.options.height || 240;
+    // this.options.width = this.options.width || 320;
+    // this.options.height = this.options.height || 240;
     this.options.cameraType = this.options.cameraType  || 'front';
     // flash fallback detection
     this.isFallback = this.options.fallback || (!this.isSupportWebRTC && !!this.options.fallbackSrc)
@@ -243,14 +243,12 @@ export interface MediaDevice {
               // option object fails
               // try string syntax
               // if the config object failes, we try a config string
-              this.browser.mediaDevices.getUserMedia(optionObject)
+              this.browser.mediaDevices.getUserMedia(optionString)
                 .then((stream: any) => resolve(stream))
                 .catch((strErr: any) => {
-
-                  console.error(objErr);
-                  console.error(strErr);
-
-                  reject(new Error('Both configs failed. Neither object nor string works'));
+                  console.error(objErr)
+                  console.error(strErr)
+                  reject(new Error('Both configs failed. Neither object nor string works'))
               });
           });
         } catch (e) {
@@ -351,7 +349,7 @@ export interface MediaDevice {
 
   drawImageArrayToCanvas(imgArray){
     const canvas = this.getCanvas();
-    //const di = this.getVideoDimensions()
+    // const di = this.getVideoDimensions()
     const ctx = canvas.getContext('2d');
     const width = imgArray[0].split(';').length
     const height = imgArray.length
@@ -493,5 +491,6 @@ export function dataUriToBlob(dataURI) {
   for (var i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
   }
+
   return new Blob([ia], {type:mimeString});
 }

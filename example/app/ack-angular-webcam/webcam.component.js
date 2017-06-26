@@ -172,7 +172,7 @@ var WebCamComponent = (function () {
                         // option object fails
                         // try string syntax
                         // if the config object failes, we try a config string
-                        _this.browser.mediaDevices.getUserMedia(optionObject)
+                        _this.browser.mediaDevices.getUserMedia(optionString)
                             .then(function (stream) { return resolve(stream); })
                             .catch(function (strErr) {
                             console.error(objErr);

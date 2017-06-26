@@ -1,13 +1,12 @@
 {
   "name": "ack-angular-webcam",
-  "version": "1.2.9",
+  "version": "1.2.11",
   "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.config.js --hot --progress --colors --port 3000",
     "test": "karma start",
-    "lint": "tslint \"lib/**/*.ts\"",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && protractor",
     "watch:js": "ack-webpack ./example/main.ts example/www/index.js --project example/tsconfig.json --modules . --watch --browser",
     "watch:dist": "watch 'npm run build:dist && npm run compile:aot' lib/",
@@ -19,11 +18,6 @@
     "build:js": "ack-webpack example/index.aot.ts example/www/index.js --production --project example/tsconfig.json",
     "compile:dist:package": "node scripts/update-dist-package.js"
   },
-  "pre-commit": [
-    "lint",
-    "test",
-    "e2e"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ackerapple/ack-angular-webcam.git"
@@ -81,8 +75,6 @@
     "style-loader": "0.13.1",
     "ts-loader": "^2.0.3",
     "ts-node": "1.3.0",
-    "tslint": "^5.2.0",
-    "tslint-loader": "^3.5.3",
     "typedoc": "^0.6.0",
     "typedoc-plantuml": "^1.4.1",
     "typedoc-webpack-plugin": "^1.1.4",

@@ -6,7 +6,7 @@ import { WebCamComponent } from './webcam.component';
 let fixture: ComponentFixture<WebCamComponent>;
 let comp: WebCamComponent;
 
-//make AoT compatible with ngc
+// make AoT compatible with ngc
 if(!describe){
   var describe = (i?,x?)=>{}
   var beforeEach = (i?)=>{}
