@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import * as videoHelp from "./videoHelp"
 
 const template = `
 <video id="video" *ngIf="isSupportWebRTC && videoSrc" [src]="videoSrc" autoplay>Video stream not available</video>
@@ -11,21 +12,6 @@ const template = `
   <param name="movie" value="jscam_canvas_only.swf">
 </object>
 `
-
-/**
- * Component options structure interface
- */
-export interface Options {
-  video: boolean | any;
-  cameraType: string;
-  audio: boolean;
-  width: number;
-  height: number;
-  fallback:boolean;
-  fallbackSrc: string;
-  fallbackMode: string;
-  fallbackQuality: number;
-}
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
@@ -43,60 +29,67 @@ export interface MediaDevice {
   selector: 'ack-webcam',
   template: template
 }) export class WebCamComponent {
-  public flashPlayer
-  public videoSrc: any;
-  public isSupportWebRTC: boolean;
-  public isFallback: boolean;
-  public browser: any;
-  public observer
-  public onResize
-  public stream
+  flashPlayer:videoHelp.Fallback
+  videoSrc: any
+  isSupportUserMedia: boolean = false
+  isSupportWebRTC: boolean = false
+  isFallback: boolean = false
+  browser: any
+  observer
+  onResize
+  stream
   
-  @Input() public mime='image/jpeg'
+  @Input() mime = 'image/jpeg'
 
   @Input() ref
   @Output() refChange = new EventEmitter()
   
-  @Input() options: Options;
+  @Input() options: videoHelp.Options;
   @Output() onSuccess = new EventEmitter()
   @Output() onError = new EventEmitter()
 
   constructor(private sanitizer: DomSanitizer, private element: ElementRef) {
-    this.isFallback = false;
-    this.isSupportWebRTC = false;
     this.browser = <any>navigator;
   }
 
+  ngOnInit(){
+    this.isSupportUserMedia = this.getMedia()!=null ? true : false
+    this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
+  }
+
   ngAfterViewInit() {
+    this.applyDefaults()
     setTimeout(()=>this.afterInitCycles(), 0)
+  }
+
+  getMedia(){
+    return this.browser.getUserMedia
+    || this.browser.webkitGetUserMedia
+    || this.browser.mozGetUserMedia
+    || this.browser.msGetUserMedia
   }
 
   afterInitCycles(){
     // getUserMedia() feature detection for older browser
-    this.browser.getUserMedia_ = (this.browser.getUserMedia
-    || this.browser.webkitGetUserMedia
-    || this.browser.mozGetUserMedia
-    || this.browser.msGetUserMedia);
+    const media = this.getMedia();
 
     // Older browsers might not implement mediaDevices at all, so we set an empty object first
-    if ((this.browser.mediaDevices === undefined) && !!this.browser.getUserMedia_) {
+    if ((this.browser.mediaDevices === undefined) && !!media) {
       this.browser.mediaDevices = {};
     }
 
     // Some browsers partially implement mediaDevices. We can't just assign an object
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
-    if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!this.browser.getUserMedia_) {
+    if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!media) {
       this.browser.mediaDevices.getUserMedia = (constraints) => {
         return new Promise((resolve, reject) => {
-          this.browser.getUserMedia_.call(this.browser, constraints, resolve, reject);
+          media.call(this.browser, constraints, resolve, reject);
         });
       }
     }
     
-    this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
-    this.applyDefaults()
-
+    //template ref to class object
     this.ref = Object.assign(this, this.ref, {
       element:this.element,
       options:this.options,
@@ -105,6 +98,12 @@ export interface MediaDevice {
     })
     setTimeout(()=>this.refChange.emit(this), 0)
 
+    this.createVideoResizer()
+    this.startCapturingVideo();
+    this.onResize()
+  }
+
+  createVideoResizer(){
     this.observer = new MutationObserver( ()=>this.resizeVideo() )
     
     const config = {
@@ -116,25 +115,16 @@ export interface MediaDevice {
     this.observer.observe(this.element.nativeElement, config);
 
     this.onResize = function(){this.resizeVideo()}.bind(this)
-
     window.addEventListener('resize', this.onResize)
-
-    this.startCapturingVideo();
-
-    this.onResize()
   }
 
   applyDefaults(){
-    this.options = this.options || <Options>{}
-    // default options
+    this.options = this.options || <videoHelp.Options>{}
     this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
     this.options.fallbackMode = this.options.fallbackMode || 'callback';
     this.options.fallbackQuality = this.options.fallbackQuality || 200;
-    // this.options.width = this.options.width || 320;
-    // this.options.height = this.options.height || 240;
     this.options.cameraType = this.options.cameraType  || 'front';
-    // flash fallback detection
-    this.isFallback = this.options.fallback || (!this.isSupportWebRTC && !!this.options.fallbackSrc)
+    this.isFallback = this.options.fallback || (!this.isSupportUserMedia && !this.isSupportWebRTC && this.options.fallbackSrc) ? true : false
 
     if(!this.options.video && !this.options.audio){
       this.options.video = true
@@ -276,66 +266,6 @@ export interface MediaDevice {
   }
 
   /**
-   * Add <param>'s into fallback object
-   * @param cam - Flash web camera instance
-   * @returns {void}
-   */
-  addFallbackParams(cam: any): any {
-    const paramFlashVars = document.createElement('param');
-    paramFlashVars.name = 'FlashVars';
-    paramFlashVars.value = 'mode=' + this.options.fallbackMode + '&amp;quality=' + this.options.fallbackQuality;
-    cam.appendChild(paramFlashVars);
-
-    const paramAllowScriptAccess = document.createElement('param');
-    paramAllowScriptAccess.name = 'allowScriptAccess';
-    paramAllowScriptAccess.value = 'always';
-    cam.appendChild(paramAllowScriptAccess);
-
-    // if (this.browser.appVersion.indexOf('MSIE') > -1) {
-    // if (isIE) {
-    cam.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
-    const paramMovie = document.createElement('param');
-    paramMovie.name = 'movie';
-    paramMovie.value = this.options.fallbackSrc;
-    cam.appendChild(paramMovie);
-    // } else {
-    cam.data = this.options.fallbackSrc;
-    // }
-  }
-
-  /**
-   * On web camera using flash fallback
-   * .swf file is necessary
-   * @returns {void}
-   */
-  onFallback(): any {
-    // Act as a plain getUserMedia shield if no fallback is required
-    if (this.options) {
-      // Fallback to flash
-      const self = this;
-      const cam = this.getVideoElm();
-      cam.width = self.options.width;
-      cam.height = self.options.height;
-
-      this.addFallbackParams(cam);
-
-      (function register(run) {
-        if (cam.capture !== undefined) {
-          self.onSuccess.emit(cam);
-        } else if (run === 0) {
-          self.onError.emit(new Error('Flash movie not yet registered!'));
-        } else {
-          // Flash interface not ready yet
-          window.setTimeout(register, 1000 * (4 - run), run - 1);
-        }
-      }(3));
-    }
-    else {
-      console.error('WebCam options is require');
-    }
-  }
-
-  /**
    * Start capturing video stream
    * @returns {void}
    */
@@ -347,43 +277,6 @@ export interface MediaDevice {
     return this.processSuccess()
   }
 
-  drawImageArrayToCanvas(imgArray){
-    const canvas = this.getCanvas();
-    // const di = this.getVideoDimensions()
-    const ctx = canvas.getContext('2d');
-    const width = imgArray[0].split(';').length
-    const height = imgArray.length
-    canvas.width = width
-    canvas.height = height
-    ctx.clearRect(0, 0, width, height);
-
-    const externData = {
-      imgData: ctx.getImageData(0, 0, width, height),
-      pos: 0
-    };
-
-    let tmp = null;
-    for(let x=0; x < imgArray.length; ++x){
-      let col = imgArray[x].split(';')
-      for (let i = 0; i < width; i++) {
-        tmp = parseInt(col[i], 10);
-        externData.imgData.data[externData.pos + 0] = (tmp >> 16) & 0xff;
-        externData.imgData.data[externData.pos + 1] = (tmp >> 8) & 0xff;
-        externData.imgData.data[externData.pos + 2] = tmp & 0xff;
-        externData.imgData.data[externData.pos + 3] = 0xff;
-        externData.pos += 4;
-      }
-
-      /*if (externData.pos >= 4 * width * height) {
-        ctx.putImageData(externData.imgData, 0, 0);
-        externData.pos = 0;
-      }*/
-    }
-
-    ctx.putImageData(externData.imgData, 0, 0);
-
-    return canvas
-  }
   ngOnDestroy(){
     this.observer.disconnect()
     window.removeEventListener(this.onResize)
@@ -406,7 +299,8 @@ export interface MediaDevice {
   /** returns promise . @mime - null=png . Also accepts image/jpeg */
   getBase64(mime?){
     if(this.isFallback){
-      return this.getFallbackBase64(mime)
+      return this.flashPlayer.captureBase64(mime||this.mime)
+      //return this.getFallbackBase64(mime)
     }else{
       const canvas = this.getCanvas()
       const video = this.getVideoElm()
@@ -414,18 +308,6 @@ export interface MediaDevice {
       canvas.getContext('2d').drawImage(video, 0, 0)
       return Promise.resolve( canvas.toDataURL(mime) )
     }
-  }
-
-  getFallbackBase64(mime?){
-    mime = mime || this.mime
-
-    return new Promise((res,rej)=>{
-      this.flashPlayer.onImage = img=>{
-        res(img)
-      }
-      this.getVideoElm().capture()
-    })
-    .then( (canvas:{toDataURL:Function})=>canvas.toDataURL(mime) )
   }
 
   setCanvasWidth(canvas?, video?){
@@ -440,57 +322,13 @@ export interface MediaDevice {
    */
   setupFallback(): void {
     this.isFallback = true
-    let dataImgArray = []
-
-    this.flashPlayer = window['webcam'] = {
-      onImage:()=>{},
-      debug: function(tag, message){
-        if(tag=='notify' && message=='Capturing finished.'){
-          this.flashPlayer.onImage( this.drawImageArrayToCanvas(dataImgArray) )
-        }
-      }.bind(this),
-      onCapture: function(){
-        dataImgArray.length = 0
-        this.getVideoElm().save();
-      }.bind(this),
-      onTick: (time) => {},
-      onSave: (data) => {
-        dataImgArray.push(data)
-      }
-    }
+    this.flashPlayer = new videoHelp.Fallback(this.getVideoElm())
   }
 
+  /** single image to FormData */
   captureAsFormData(options?:{mime?:string, fileName?:string, form?:FormData}){
     options = options || {}
     return this.getBase64(options.mime)
-    .then( base64=>this.dataUriToFormData(base64, {fileName:options.fileName}) )
+    .then( base64=>videoHelp.dataUriToFormData(base64, {fileName:options.fileName}) )
   }
-  
-  dataUriToFormData(dataURI, options?:{fileName?:string, form?:FormData}){
-    options = options || {}
-    options.form = options.form || new FormData()
-    options.form.append('file', dataUriToBlob(dataURI), options.fileName||'file.jpg');
-    return options.form
-  }
-}
-
-
-export function dataUriToBlob(dataURI) {
-  // convert base64/URLEncoded data component to raw binary data held in a string
-  var byteString;
-  if (dataURI.split(',')[0].indexOf('base64') >= 0){
-    byteString = atob(dataURI.split(',')[1]);
-  }else{
-    byteString = window['unescape'](dataURI.split(',')[1]);
-  }
-
-  // separate out the mime component
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-  // write the bytes of the string to a typed array
-  var ia = new Uint8Array(byteString.length);
-  for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-  }
-
-  return new Blob([ia], {type:mimeString});
 }

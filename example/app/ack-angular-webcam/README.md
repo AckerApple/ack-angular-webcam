@@ -61,6 +61,9 @@ export default AppModule;
 
 app.component.ts
 ```javascript
+import { Component } from '@angular/core';
+import { Http, Request } from '@angular/http';
+
 const template = `
 <ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onCamSuccess($event)" (onError)="onCamError($event)"></ack-webcam>
 <button (click)="genBase64()"> generate base64 </button>
@@ -71,8 +74,10 @@ const template = `
   selector:'app-component',
   template:template
 }) export class AppComponent{
-  public webcam
+  public webcam//will be populated by ack-webcam [(ref)]
   public base64
+
+  constructor(public http:Http){}
 
   genBase64(){
     this.webcam.getBase64()
@@ -80,10 +85,24 @@ const template = `
     .catch( e=>console.error(e) )
   }
 
+  //get HTML5 FormData object and pretend to post to server
   genPostData(){
     this.webcam.captureAsFormData({fileName:'file.jpg'})
-    .then( FormData=>console.log(FormData))
+    .then( formData=>this.postFormData(formData) )
     .catch( e=>console.error(e) )
+  }
+
+  //a pretend process that would post the webcam photo taken
+  postFormData(formData){
+    const config = {
+      method:"post",
+      url:"http://www.aviorsciences.com/",
+      body: formData
+    }
+
+    const request = new Request(config)
+
+    return this.http.request( request )
   }
 
   onCamError(err){}

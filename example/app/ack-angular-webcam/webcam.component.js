@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
+var videoHelp = require("./videoHelp");
 var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src]=\"videoSrc\" autoplay>Video stream not available</video>\n\n<object *ngIf=\"isFallback\" data=\"jscam_canvas_only.swf\">\n  Video stream not available\n  <param name=\"FlashVars\" value=\"mode=callback&amp;quality=200\">\n  <param name=\"allowScriptAccess\" value=\"always\">\n  <param name=\"movie\" value=\"jscam_canvas_only.swf\">\n</object>\n";
 /**
  * Render WebCam Component
@@ -10,41 +11,49 @@ var WebCamComponent = (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
+        this.isSupportUserMedia = false;
+        this.isSupportWebRTC = false;
+        this.isFallback = false;
         this.mime = 'image/jpeg';
         this.refChange = new core_1.EventEmitter();
         this.onSuccess = new core_1.EventEmitter();
         this.onError = new core_1.EventEmitter();
-        this.isFallback = false;
-        this.isSupportWebRTC = false;
         this.browser = navigator;
     }
+    WebCamComponent.prototype.ngOnInit = function () {
+        this.isSupportUserMedia = this.getMedia() != null ? true : false;
+        this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
+    };
     WebCamComponent.prototype.ngAfterViewInit = function () {
         var _this = this;
+        this.applyDefaults();
         setTimeout(function () { return _this.afterInitCycles(); }, 0);
+    };
+    WebCamComponent.prototype.getMedia = function () {
+        return this.browser.getUserMedia
+            || this.browser.webkitGetUserMedia
+            || this.browser.mozGetUserMedia
+            || this.browser.msGetUserMedia;
     };
     WebCamComponent.prototype.afterInitCycles = function () {
         var _this = this;
         // getUserMedia() feature detection for older browser
-        this.browser.getUserMedia_ = (this.browser.getUserMedia
-            || this.browser.webkitGetUserMedia
-            || this.browser.mozGetUserMedia
-            || this.browser.msGetUserMedia);
+        var media = this.getMedia();
         // Older browsers might not implement mediaDevices at all, so we set an empty object first
-        if ((this.browser.mediaDevices === undefined) && !!this.browser.getUserMedia_) {
+        if ((this.browser.mediaDevices === undefined) && !!media) {
             this.browser.mediaDevices = {};
         }
         // Some browsers partially implement mediaDevices. We can't just assign an object
         // with getUserMedia as it would overwrite existing properties.
         // Here, we will just add the getUserMedia property if it's missing.
-        if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!this.browser.getUserMedia_) {
+        if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!media) {
             this.browser.mediaDevices.getUserMedia = function (constraints) {
                 return new Promise(function (resolve, reject) {
-                    _this.browser.getUserMedia_.call(_this.browser, constraints, resolve, reject);
+                    media.call(_this.browser, constraints, resolve, reject);
                 });
             };
         }
-        this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
-        this.applyDefaults();
+        //template ref to class object
         this.ref = Object.assign(this, this.ref, {
             element: this.element,
             options: this.options,
@@ -52,6 +61,12 @@ var WebCamComponent = (function () {
             onError: this.onError
         });
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
+        this.createVideoResizer();
+        this.startCapturingVideo();
+        this.onResize();
+    };
+    WebCamComponent.prototype.createVideoResizer = function () {
+        var _this = this;
         this.observer = new MutationObserver(function () { return _this.resizeVideo(); });
         var config = {
             attributes: true,
@@ -61,20 +76,14 @@ var WebCamComponent = (function () {
         this.observer.observe(this.element.nativeElement, config);
         this.onResize = function () { this.resizeVideo(); }.bind(this);
         window.addEventListener('resize', this.onResize);
-        this.startCapturingVideo();
-        this.onResize();
     };
     WebCamComponent.prototype.applyDefaults = function () {
         this.options = this.options || {};
-        // default options
         this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
         this.options.fallbackMode = this.options.fallbackMode || 'callback';
         this.options.fallbackQuality = this.options.fallbackQuality || 200;
-        //this.options.width = this.options.width || 320;
-        //this.options.height = this.options.height || 240;
         this.options.cameraType = this.options.cameraType || 'front';
-        // flash fallback detection
-        this.isFallback = this.options.fallback || (!this.isSupportWebRTC && !!this.options.fallbackSrc);
+        this.isFallback = this.options.fallback || (!this.isSupportUserMedia && !this.isSupportWebRTC && this.options.fallbackSrc) ? true : false;
         if (!this.options.video && !this.options.audio) {
             this.options.video = true;
         }
@@ -204,62 +213,6 @@ var WebCamComponent = (function () {
         }
     };
     /**
-     * Add <param>'s into fallback object
-     * @param cam - Flash web camera instance
-     * @returns {void}
-     */
-    WebCamComponent.prototype.addFallbackParams = function (cam) {
-        var paramFlashVars = document.createElement('param');
-        paramFlashVars.name = 'FlashVars';
-        paramFlashVars.value = 'mode=' + this.options.fallbackMode + '&amp;quality=' + this.options.fallbackQuality;
-        cam.appendChild(paramFlashVars);
-        var paramAllowScriptAccess = document.createElement('param');
-        paramAllowScriptAccess.name = 'allowScriptAccess';
-        paramAllowScriptAccess.value = 'always';
-        cam.appendChild(paramAllowScriptAccess);
-        // if (this.browser.appVersion.indexOf('MSIE') > -1) {
-        // if (isIE) {
-        cam.classid = 'clsid:D27CDB6E-AE6D-11cf-96B8-444553540000';
-        var paramMovie = document.createElement('param');
-        paramMovie.name = 'movie';
-        paramMovie.value = this.options.fallbackSrc;
-        cam.appendChild(paramMovie);
-        // } else {
-        cam.data = this.options.fallbackSrc;
-        // }
-    };
-    /**
-     * On web camera using flash fallback
-     * .swf file is necessary
-     * @returns {void}
-     */
-    WebCamComponent.prototype.onFallback = function () {
-        // Act as a plain getUserMedia shield if no fallback is required
-        if (this.options) {
-            // Fallback to flash
-            var self_1 = this;
-            var cam_1 = this.getVideoElm();
-            cam_1.width = self_1.options.width;
-            cam_1.height = self_1.options.height;
-            this.addFallbackParams(cam_1);
-            (function register(run) {
-                if (cam_1.capture !== undefined) {
-                    self_1.onSuccess.emit(cam_1);
-                }
-                else if (run === 0) {
-                    self_1.onError.emit(new Error('Flash movie not yet registered!'));
-                }
-                else {
-                    // Flash interface not ready yet
-                    window.setTimeout(register, 1000 * (4 - run), run - 1);
-                }
-            }(3));
-        }
-        else {
-            console.error('WebCam options is require');
-        }
-    };
-    /**
      * Start capturing video stream
      * @returns {void}
      */
@@ -268,38 +221,6 @@ var WebCamComponent = (function () {
             return this.onWebRTC();
         }
         return this.processSuccess();
-    };
-    WebCamComponent.prototype.drawImageArrayToCanvas = function (imgArray) {
-        var canvas = this.getCanvas();
-        //const di = this.getVideoDimensions()
-        var ctx = canvas.getContext('2d');
-        var width = imgArray[0].split(';').length;
-        var height = imgArray.length;
-        canvas.width = width;
-        canvas.height = height;
-        ctx.clearRect(0, 0, width, height);
-        var externData = {
-            imgData: ctx.getImageData(0, 0, width, height),
-            pos: 0
-        };
-        var tmp = null;
-        for (var x = 0; x < imgArray.length; ++x) {
-            var col = imgArray[x].split(';');
-            for (var i = 0; i < width; i++) {
-                tmp = parseInt(col[i], 10);
-                externData.imgData.data[externData.pos + 0] = (tmp >> 16) & 0xff;
-                externData.imgData.data[externData.pos + 1] = (tmp >> 8) & 0xff;
-                externData.imgData.data[externData.pos + 2] = tmp & 0xff;
-                externData.imgData.data[externData.pos + 3] = 0xff;
-                externData.pos += 4;
-            }
-            /*if (externData.pos >= 4 * width * height) {
-              ctx.putImageData(externData.imgData, 0, 0);
-              externData.pos = 0;
-            }*/
-        }
-        ctx.putImageData(externData.imgData, 0, 0);
-        return canvas;
     };
     WebCamComponent.prototype.ngOnDestroy = function () {
         this.observer.disconnect();
@@ -318,7 +239,8 @@ var WebCamComponent = (function () {
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     WebCamComponent.prototype.getBase64 = function (mime) {
         if (this.isFallback) {
-            return this.getFallbackBase64(mime);
+            return this.flashPlayer.captureBase64(mime || this.mime);
+            //return this.getFallbackBase64(mime)
         }
         else {
             var canvas = this.getCanvas();
@@ -327,17 +249,6 @@ var WebCamComponent = (function () {
             canvas.getContext('2d').drawImage(video, 0, 0);
             return Promise.resolve(canvas.toDataURL(mime));
         }
-    };
-    WebCamComponent.prototype.getFallbackBase64 = function (mime) {
-        var _this = this;
-        mime = mime || this.mime;
-        return new Promise(function (res, rej) {
-            _this.flashPlayer.onImage = function (img) {
-                res(img);
-            };
-            _this.getVideoElm().capture();
-        })
-            .then(function (canvas) { return canvas.toDataURL(mime); });
     };
     WebCamComponent.prototype.setCanvasWidth = function (canvas, video) {
         var di = this.getVideoDimensions(video);
@@ -350,75 +261,34 @@ var WebCamComponent = (function () {
      */
     WebCamComponent.prototype.setupFallback = function () {
         this.isFallback = true;
-        var dataImgArray = [];
-        this.flashPlayer = window['webcam'] = {
-            onImage: function () { },
-            debug: function (tag, message) {
-                if (tag == 'notify' && message == 'Capturing finished.') {
-                    this.flashPlayer.onImage(this.drawImageArrayToCanvas(dataImgArray));
-                }
-            }.bind(this),
-            onCapture: function () {
-                dataImgArray.length = 0;
-                this.getVideoElm().save();
-            }.bind(this),
-            onTick: function (time) { },
-            onSave: function (data) {
-                dataImgArray.push(data);
-            }
-        };
+        this.flashPlayer = new videoHelp.Fallback(this.getVideoElm());
     };
+    /** single image to FormData */
     WebCamComponent.prototype.captureAsFormData = function (options) {
-        var _this = this;
         options = options || {};
         return this.getBase64(options.mime)
-            .then(function (base64) { return _this.dataUriToFormData(base64, { fileName: options.fileName }); });
+            .then(function (base64) { return videoHelp.dataUriToFormData(base64, { fileName: options.fileName }); });
     };
-    WebCamComponent.prototype.dataUriToFormData = function (dataURI, options) {
-        options = options || {};
-        options.form = options.form || new FormData();
-        options.form.append('file', dataUriToBlob(dataURI), options.fileName || 'file.jpg');
-        return options.form;
+    WebCamComponent.decorators = [
+        { type: core_1.Component, args: [{
+                    selector: 'ack-webcam',
+                    template: template
+                },] },
+    ];
+    /** @nocollapse */
+    WebCamComponent.ctorParameters = function () { return [
+        { type: platform_browser_1.DomSanitizer, },
+        { type: core_1.ElementRef, },
+    ]; };
+    WebCamComponent.propDecorators = {
+        'mime': [{ type: core_1.Input },],
+        'ref': [{ type: core_1.Input },],
+        'refChange': [{ type: core_1.Output },],
+        'options': [{ type: core_1.Input },],
+        'onSuccess': [{ type: core_1.Output },],
+        'onError': [{ type: core_1.Output },],
     };
     return WebCamComponent;
 }());
-WebCamComponent.decorators = [
-    { type: core_1.Component, args: [{
-                selector: 'ack-webcam',
-                template: template
-            },] },
-];
-/** @nocollapse */
-WebCamComponent.ctorParameters = function () { return [
-    { type: platform_browser_1.DomSanitizer, },
-    { type: core_1.ElementRef, },
-]; };
-WebCamComponent.propDecorators = {
-    'mime': [{ type: core_1.Input },],
-    'ref': [{ type: core_1.Input },],
-    'refChange': [{ type: core_1.Output },],
-    'options': [{ type: core_1.Input },],
-    'onSuccess': [{ type: core_1.Output },],
-    'onError': [{ type: core_1.Output },],
-};
 exports.WebCamComponent = WebCamComponent;
-function dataUriToBlob(dataURI) {
-    // convert base64/URLEncoded data component to raw binary data held in a string
-    var byteString;
-    if (dataURI.split(',')[0].indexOf('base64') >= 0) {
-        byteString = atob(dataURI.split(',')[1]);
-    }
-    else {
-        byteString = window['unescape'](dataURI.split(',')[1]);
-    }
-    // separate out the mime component
-    var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-    // write the bytes of the string to a typed array
-    var ia = new Uint8Array(byteString.length);
-    for (var i = 0; i < byteString.length; i++) {
-        ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ia], { type: mimeString });
-}
-exports.dataUriToBlob = dataUriToBlob;
 //# sourceMappingURL=webcam.component.js.map

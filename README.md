@@ -97,7 +97,7 @@ const template = `
     const config = {
       method:"post",
       url:"http://www.aviorsciences.com/",
-      body = formData
+      body: formData
     }
 
     const request = new Request(config)
