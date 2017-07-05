@@ -2,6 +2,7 @@
 aot/
 .DS_Store
 styles.css.map
+*.js.map
 updaters/
 .com.google.*
 .idea
