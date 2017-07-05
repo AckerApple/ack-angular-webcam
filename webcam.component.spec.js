@@ -6,7 +6,7 @@ var core_1 = require("@angular/core");
 var webcam_component_1 = require("./webcam.component");
 var fixture;
 var comp;
-//make AoT compatible with ngc
+// make AoT compatible with ngc
 if (!describe) {
     var describe = function (i, x) { };
     var beforeEach = function (i) { };
