@@ -14,6 +14,7 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 - [Options](#options)
 - [Flash Fallback](#flash-fallbak)
 - [Example and Tests](#example-and-tests)
+  - [Locally-Test](#locally-test)
 - [Credits](#credits)
 - [Spec References](#spec-references)
 
@@ -142,6 +143,31 @@ You can check example using following npm commands:
 ```
 npm run watch
 ```
+
+### Locally Test
+Type the following commands in a command prompt terminal
+
+Step 1 of 4
+```
+git clone https://github.com/ackerapple/ack-angular-webcam -b master
+```
+
+Step 2 of 4
+```
+cd ack-angular-webcam
+```
+
+Step 3 of 4
+```
+npm install
+```
+
+Step 4 of 4
+```
+npm run watch
+```
+
+> After step 4, a web browser should auto open a demo page and any code changes you perform to ack-angular-webcam will cause an auto-refresh of browser
 
 ## Credits
 - [pre-fork package credits](https://github.com/addyosmani/getUserMedia.js#credits)
