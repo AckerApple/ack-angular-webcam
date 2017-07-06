@@ -1,6 +1,6 @@
 {
   "name": "ack-angular-webcam",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -10,7 +10,7 @@
     "test:old": "karma start",
     "e2e": "./node_modules/protractor/bin/webdriver-manager update && protractor",
     "watch:js": "ack-webpack ./example/main.ts example/www/index.js --project example/tsconfig.json --modules . --watch --browser",
-    "watch:dist": "watch 'npm-run-all build:dist compile:aot' lib/",
+    "watch:dist": "watch \"npm-run-all build:dist compile:aot\" lib/",
     "watch": "npm run watch:dist & npm run watch:js",
     "compile:aot": "npm-run-all copy:example-dist compile:aot:ts",
     "compile:aot:ts": "ngc -p example/tsconfig.aot.json",
