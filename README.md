@@ -28,6 +28,9 @@ This component is based on [MediaDevices](https://developer.mozilla.org/en-US/do
 
 Please, check original repository for clear understanding
 
+### Internet Explorer 11
+
+A polyfill will be needed. The function Object.assign and other missing functionality in Internet Explorer will need to be polyfilled.
 
 ## Getting Started
 
