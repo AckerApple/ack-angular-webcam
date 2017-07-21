@@ -44,7 +44,7 @@ const template=`
       //width: 320,
       //height: 240,
       //fallbackQuality: 200,
-      fallbackSrc: 'jscam_canvas_only.swf'
+      fallbackSrc: 'fallback/jscam_canvas_only.swf'
     };
     
   }

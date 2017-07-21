@@ -12,7 +12,6 @@ const template = `
   <param name="movie" value="jscam_canvas_only.swf">
 </object>
 `
-
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
  */
@@ -322,7 +321,18 @@ export interface MediaDevice {
    */
   setupFallback(): void {
     this.isFallback = true
-    this.flashPlayer = new videoHelp.Fallback(this.getVideoElm())
+    const vidElm = this.getVideoElm()
+    vidElm.setAttribute('data', this.options.fallbackSrc)
+    
+    const params = vidElm.getElementsByTagName('param')
+    for(let x=params.length-1; x >= 0; --x){
+      if(params[x].getAttribute('name')=='movie'){
+        params[x].setAttribute('value', this.options.fallbackSrc)
+        break
+      }
+    }
+    
+    this.flashPlayer = new videoHelp.Fallback(vidElm)
   }
 
   /** single image to FormData */
