@@ -261,7 +261,16 @@ var WebCamComponent = (function () {
      */
     WebCamComponent.prototype.setupFallback = function () {
         this.isFallback = true;
-        this.flashPlayer = new videoHelp.Fallback(this.getVideoElm());
+        var vidElm = this.getVideoElm();
+        vidElm.setAttribute('data', this.options.fallbackSrc);
+        var params = vidElm.getElementsByTagName('param');
+        for (var x = params.length - 1; x >= 0; --x) {
+            if (params[x].getAttribute('name') == 'movie') {
+                params[x].setAttribute('value', this.options.fallbackSrc);
+                break;
+            }
+        }
+        this.flashPlayer = new videoHelp.Fallback(vidElm);
     };
     /** single image to FormData */
     WebCamComponent.prototype.captureAsFormData = function (options) {
