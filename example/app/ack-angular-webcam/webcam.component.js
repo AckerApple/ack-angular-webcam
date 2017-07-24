@@ -224,7 +224,7 @@ var WebCamComponent = (function () {
     };
     WebCamComponent.prototype.ngOnDestroy = function () {
         this.observer.disconnect();
-        window.removeEventListener(this.onResize);
+        window.removeEventListener('resize', this.onResize);
         var vid = this.getVideoElm();
         if (vid && vid.pause) {
             vid.pause();

@@ -278,7 +278,7 @@ export interface MediaDevice {
 
   ngOnDestroy(){
     this.observer.disconnect()
-    window.removeEventListener(this.onResize)
+    window.removeEventListener('resize', this.onResize)
 
     const vid = this.getVideoElm()
 
