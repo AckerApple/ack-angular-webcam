@@ -6,7 +6,7 @@ const template=`
     <td style="overflow:hidden;width:50%;text-align:center;background-position:center;background-size:contain;background-repeat:no-repeat;" [hidden]="!captured" [style.background-image]="base64?'url('+base64+')':null">
       &nbsp;
     </td>
-    <td [ngStyle]="{width:captured?'50%':'100%'}">
+    <td *ngIf="!destroy" [ngStyle]="{width:captured?'50%':'100%'}">
       <ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onSuccess($event)" (onError)="onError($event)" style="width:100%;height:100%;display:block;"></ack-webcam>
     </td>
   </tr>
@@ -16,11 +16,14 @@ const template=`
     </td>
   </tr>
   <tr style="height:60px">
-    <td [hidden]="!captured">
-      <button (click)="showBase64=!showBase64" style="padding:1em;font-size:1.2em;width:100%;">Show Base64</button>
+    <td>
+      <div [hidden]="!captured">
+        <button (click)="showBase64=!showBase64" style="padding:1em;font-size:1.2em;width:100%;">Show Base64</button>
+      </div>
+      <button *ngIf="webcam" (click)="captureBase64()" style="padding:1em;font-size:1.2em;width:100%">Capture</button>
     </td>
     <td>
-      <button (click)="captureBase64()" style="padding:1em;font-size:1.2em;width:100%">Capture</button>
+      <button (click)="destroy=!destroy" style="padding:1em;font-size:1.2em;width:100%">{{ destroy ? 'Create' : 'Destroy'}}</button>
     </td>
   </tr>
 </table>

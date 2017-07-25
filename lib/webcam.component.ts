@@ -4,13 +4,6 @@ import * as videoHelp from "./videoHelp"
 
 const template = `
 <video id="video" *ngIf="isSupportWebRTC && videoSrc" [src]="videoSrc" autoplay>Video stream not available</video>
-
-<object *ngIf="isFallback" data="jscam_canvas_only.swf">
-  Video stream not available
-  <param name="FlashVars" value="mode=callback&amp;quality=200">
-  <param name="allowScriptAccess" value="always">
-  <param name="movie" value="jscam_canvas_only.swf">
-</object>
 `
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
@@ -316,23 +309,45 @@ export interface MediaDevice {
     canvas.height = di.height
   }
 
+  /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
+  createVidElmOb(){
+    const rtnElm = document.createElement('object')
+    rtnElm.innerHTML = 'Video stream not available'
+    rtnElm.setAttribute('type','application/x-shockwave-flash')
+    rtnElm.setAttribute('data',this.options.fallbackSrc)
+
+    let paramVar = document.createElement('param')
+    paramVar.setAttribute('name','FlashVars')
+    paramVar.setAttribute('value','mode=callback&amp;quality=200')
+    rtnElm.appendChild( paramVar )
+
+    paramVar = document.createElement('param')
+    paramVar.setAttribute('name','allowScriptAccess')
+    paramVar.setAttribute('value','always')
+    rtnElm.appendChild( paramVar )
+
+    paramVar = document.createElement('param')
+    paramVar.setAttribute('name','movie')
+    paramVar.setAttribute('value',this.options.fallbackSrc)
+    rtnElm.appendChild( paramVar )
+
+    const obs = this.element.nativeElement.getElementsByTagName('object');
+    if(obs.length){
+      this.element.nativeElement.removeChild( obs[0] )
+    }
+
+    this.element.nativeElement.appendChild( rtnElm )
+
+    return rtnElm
+  }
+
   /**
    * Implement fallback external interface
    */
   setupFallback(): void {
     this.isFallback = true
-    const vidElm = this.getVideoElm()
-    vidElm.setAttribute('data', this.options.fallbackSrc)
-    
-    const params = vidElm.getElementsByTagName('param')
-    for(let x=params.length-1; x >= 0; --x){
-      if(params[x].getAttribute('name')=='movie'){
-        params[x].setAttribute('value', this.options.fallbackSrc)
-        break
-      }
-    }
-    
-    this.flashPlayer = new videoHelp.Fallback(vidElm)
+    const vidElm = this.getVideoElm() || this.createVidElmOb()
+    this.flashPlayer = new videoHelp.Fallback( vidElm )
   }
 
   /** single image to FormData */

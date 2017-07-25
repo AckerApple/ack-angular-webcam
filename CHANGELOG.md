@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.3.5] - 2017-07-25
+- Addressed IE11 fallback issues
+
 ## [1.3.5] - 2017-07-24
 - Fixed removeEventListener bug report
 
