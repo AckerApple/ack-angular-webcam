@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp = require("./videoHelp");
-var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src]=\"videoSrc\" autoplay>Video stream not available</video>\n\n<object *ngIf=\"isFallback\" data=\"jscam_canvas_only.swf\">\n  Video stream not available\n  <param name=\"FlashVars\" value=\"mode=callback&amp;quality=200\">\n  <param name=\"allowScriptAccess\" value=\"always\">\n  <param name=\"movie\" value=\"jscam_canvas_only.swf\">\n</object>\n";
+var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src]=\"videoSrc\" autoplay>Video stream not available</video>\n";
 /**
  * Render WebCam Component
  */
@@ -256,20 +256,37 @@ var WebCamComponent = (function () {
         canvas.width = di.width;
         canvas.height = di.height;
     };
+    /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
+    WebCamComponent.prototype.createVidElmOb = function () {
+        var rtnElm = document.createElement('object');
+        rtnElm.innerHTML = 'Video stream not available';
+        rtnElm.setAttribute('type', 'application/x-shockwave-flash');
+        rtnElm.setAttribute('data', this.options.fallbackSrc);
+        var paramVar = document.createElement('param');
+        paramVar.setAttribute('name', 'FlashVars');
+        paramVar.setAttribute('value', 'mode=callback&amp;quality=200');
+        rtnElm.appendChild(paramVar);
+        paramVar = document.createElement('param');
+        paramVar.setAttribute('name', 'allowScriptAccess');
+        paramVar.setAttribute('value', 'always');
+        rtnElm.appendChild(paramVar);
+        paramVar = document.createElement('param');
+        paramVar.setAttribute('name', 'movie');
+        paramVar.setAttribute('value', this.options.fallbackSrc);
+        rtnElm.appendChild(paramVar);
+        var obs = this.element.nativeElement.getElementsByTagName('object');
+        if (obs.length) {
+            this.element.nativeElement.removeChild(obs[0]);
+        }
+        this.element.nativeElement.appendChild(rtnElm);
+        return rtnElm;
+    };
     /**
      * Implement fallback external interface
      */
     WebCamComponent.prototype.setupFallback = function () {
         this.isFallback = true;
-        var vidElm = this.getVideoElm();
-        vidElm.setAttribute('data', this.options.fallbackSrc);
-        var params = vidElm.getElementsByTagName('param');
-        for (var x = params.length - 1; x >= 0; --x) {
-            if (params[x].getAttribute('name') == 'movie') {
-                params[x].setAttribute('value', this.options.fallbackSrc);
-                break;
-            }
-        }
+        var vidElm = this.getVideoElm() || this.createVidElmOb();
         this.flashPlayer = new videoHelp.Fallback(vidElm);
     };
     /** single image to FormData */

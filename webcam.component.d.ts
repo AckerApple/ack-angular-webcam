@@ -64,6 +64,8 @@ export declare class WebCamComponent {
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     getBase64(mime?: any): Promise<string>;
     setCanvasWidth(canvas?: any, video?: any): void;
+    /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
+    createVidElmOb(): HTMLObjectElement;
     /**
      * Implement fallback external interface
      */
