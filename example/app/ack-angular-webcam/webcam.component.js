@@ -230,7 +230,8 @@ var WebCamComponent = (function () {
             vid.pause();
         }
         if (this.stream) {
-            this.stream.getTracks()[0].stop();
+            this.stream.getTracks().forEach(function (track) { return track.stop(); });
+            //this.stream.getTracks()[0].stop();
         }
     };
     WebCamComponent.prototype.getCanvas = function () {

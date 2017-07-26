@@ -280,7 +280,8 @@ export interface MediaDevice {
     }
 
     if(this.stream){
-      this.stream.getTracks()[0].stop();
+      this.stream.getTracks().forEach(track=>track.stop())
+      //this.stream.getTracks()[0].stop();
     }
   }
 

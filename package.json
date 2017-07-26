@@ -1,6 +1,6 @@
 {
   "name": "ack-angular-webcam",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "Angular2 webcam component. Based on MediaDevices and getUserMedia.js ",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
