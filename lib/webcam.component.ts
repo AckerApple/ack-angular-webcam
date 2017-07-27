@@ -82,12 +82,12 @@ export interface MediaDevice {
     }
     
     //template ref to class object
-    this.ref = Object.assign(this, this.ref, {
+    /*this.ref = Object.assign(this, this.ref, {
       element:this.element,
       options:this.options,
       onSuccess:this.onSuccess,
       onError:this.onError
-    })
+    })*/
     setTimeout(()=>this.refChange.emit(this), 0)
 
     this.createVideoResizer()
@@ -279,7 +279,7 @@ export interface MediaDevice {
       vid.pause()
     }
 
-    if(this.stream){
+    if( this.stream ){
       this.stream.getTracks().forEach(track=>track.stop())
       //this.stream.getTracks()[0].stop();
     }
