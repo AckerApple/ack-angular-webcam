@@ -54,12 +54,12 @@ var WebCamComponent = (function () {
             };
         }
         //template ref to class object
-        this.ref = Object.assign(this, this.ref, {
-            element: this.element,
-            options: this.options,
-            onSuccess: this.onSuccess,
-            onError: this.onError
-        });
+        /*this.ref = Object.assign(this, this.ref, {
+          element:this.element,
+          options:this.options,
+          onSuccess:this.onSuccess,
+          onError:this.onError
+        })*/
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
         this.startCapturingVideo();
