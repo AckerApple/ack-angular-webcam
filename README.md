@@ -16,6 +16,7 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 - [Example and Tests](#example-and-tests)
   - [Locally-Test](#locally-test)
 - [WoRk On ThIs PaCkAgE](#work-on-this-package)
+- [If You Like ack-webpack](#if-you-like-ack-webpack)
 - [Credits](#credits)
 - [Spec References](#spec-references)
 
@@ -184,6 +185,12 @@ Nobodies perfect
 - Make changes in  master branch
 - Change package version number based on impact of change 0.0.0
 - npm run build
+
+## If You Like ack-webpack
+You might also want to give these packages a try
+- [ack-angular](https://www.npmjs.com/package/ack-angular)
+- [ack-angular-fx](https://www.npmjs.com/package/ack-angular-fx)
+- [ack-css-boot](https://www.npmjs.com/package/ack-css-boot)
 
 ## Credits
 - [pre-fork package credits](https://github.com/addyosmani/getUserMedia.js#credits)

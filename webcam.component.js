@@ -296,6 +296,12 @@ var WebCamComponent = (function () {
         return this.getBase64(options.mime)
             .then(function (base64) { return videoHelp.dataUriToFormData(base64, { fileName: options.fileName }); });
     };
+    WebCamComponent.prototype.dataUriToFormData = function (base64, options) {
+        return videoHelp.dataUriToFormData(base64, { fileName: options.fileName });
+    };
+    WebCamComponent.prototype.videoHelp = function () {
+        return videoHelp;
+    };
     WebCamComponent.decorators = [
         { type: core_1.Component, args: [{
                     selector: 'ack-webcam',

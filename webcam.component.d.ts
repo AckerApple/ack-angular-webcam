@@ -76,4 +76,6 @@ export declare class WebCamComponent {
         fileName?: string;
         form?: FormData;
     }): Promise<FormData>;
+    dataUriToFormData(base64: any, options: any): FormData;
+    videoHelp(): typeof videoHelp;
 }
