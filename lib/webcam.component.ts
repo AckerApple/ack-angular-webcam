@@ -42,6 +42,7 @@ export interface MediaDevice {
 
   constructor(private sanitizer: DomSanitizer, private element: ElementRef) {
     this.browser = <any>navigator;
+    //this.onResize = function(){}
   }
 
   ngOnInit(){
@@ -53,6 +54,10 @@ export interface MediaDevice {
     this.applyDefaults()
     setTimeout(()=>this.afterInitCycles(), 0)
   }
+
+  /*ngOnChanges() {
+    this.onResize()
+  }*/
 
   getMedia(){
     return this.browser.getUserMedia
@@ -356,5 +361,13 @@ export interface MediaDevice {
     options = options || {}
     return this.getBase64(options.mime)
     .then( base64=>videoHelp.dataUriToFormData(base64, {fileName:options.fileName}) )
+  }
+
+  dataUriToFormData(base64, options){
+    return videoHelp.dataUriToFormData(base64, {fileName:options.fileName})
+  }
+
+  videoHelp(){
+    return videoHelp
   }
 }
