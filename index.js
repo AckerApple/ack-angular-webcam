@@ -1,3 +1,17 @@
+if (typeof Object.values != 'function') {
+  (function () {
+    Object.values = function (target) {
+      'use strict';
+      var array = []
+      for(var x in target)array.push(target)
+      return array
+    };
+
+    Object.prototype.values = function(){
+      return Object.values(this)
+    }
+  })();
+}
 if (typeof Object.assign != 'function') {
   (function () {
     Object.assign = function (target) {
