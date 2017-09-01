@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES5",
     "module": "commonjs",
     "moduleResolution": "node",
+    "downlevelIteration": true,
     "sourceMap": true,
     "inlineSources": true,
     "emitDecoratorMetadata": true,

@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 function dataUriToBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
