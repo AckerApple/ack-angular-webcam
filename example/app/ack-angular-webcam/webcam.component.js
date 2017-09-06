@@ -7,7 +7,7 @@ var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src
 /**
  * Render WebCam Component
  */
-var WebCamComponent = (function () {
+var WebCamComponent = /** @class */ (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
@@ -182,16 +182,19 @@ var WebCamComponent = (function () {
                     _this.browser.mediaDevices.getUserMedia(optionObject)
                         .then(function (stream) { return resolve(stream); })
                         .catch(function (objErr) {
-                        // option object fails
-                        // try string syntax
-                        // if the config object failes, we try a config string
-                        _this.browser.mediaDevices.getUserMedia(optionString)
-                            .then(function (stream) { return resolve(stream); })
-                            .catch(function (strErr) {
+                        try {
+                            _this.browser.mediaDevices.getUserMedia(optionString)
+                                .then(function (stream) { return resolve(stream); })
+                                .catch(function (strErr) {
+                                console.error(objErr);
+                                console.error(strErr);
+                                reject(new Error('Both configs failed. Neither object nor string works'));
+                            });
+                        }
+                        catch (e) {
                             console.error(objErr);
-                            console.error(strErr);
-                            reject(new Error('Both configs failed. Neither object nor string works'));
-                        });
+                            reject(objErr);
+                        }
                     });
                 }
                 catch (e) {

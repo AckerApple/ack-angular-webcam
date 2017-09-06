@@ -3,6 +3,9 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 
 [Demo Page](https://ackerapple.github.io/ack-angular-webcam/)
 
+### Internet Explorer
+> Internet Explorer is not at all supported. Sorry not sorry
+
 ### Table of Contents
 
 - [Screenshot](#screenshot)

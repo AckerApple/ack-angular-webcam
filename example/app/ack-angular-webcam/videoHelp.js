@@ -61,7 +61,7 @@ function drawImageArrayToCanvas(imgArray) {
     return canvas;
 }
 exports.drawImageArrayToCanvas = drawImageArrayToCanvas;
-var Fallback = (function () {
+var Fallback = /** @class */ (function () {
     function Fallback(videoObject) {
         var _this = this;
         this.onImage = new core_1.EventEmitter();

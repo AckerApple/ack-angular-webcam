@@ -227,16 +227,18 @@ export interface MediaDevice {
           this.browser.mediaDevices.getUserMedia(optionObject)
             .then((stream: any) => resolve(stream))
             .catch((objErr: any) => {
-              // option object fails
-              // try string syntax
-              // if the config object failes, we try a config string
-              this.browser.mediaDevices.getUserMedia(optionString)
-                .then((stream: any) => resolve(stream))
-                .catch((strErr: any) => {
-                  console.error(objErr)
-                  console.error(strErr)
-                  reject(new Error('Both configs failed. Neither object nor string works'))
-              });
+              try{
+                this.browser.mediaDevices.getUserMedia(optionString)
+                  .then((stream: any) => resolve(stream))
+                  .catch((strErr: any) => {
+                    console.error(objErr)
+                    console.error(strErr)
+                    reject(new Error('Both configs failed. Neither object nor string works'))
+                });
+              }catch(e){
+                console.error(objErr)
+                reject(objErr)
+              }
           });
         } catch (e) {
           reject(e);
