@@ -6,7 +6,7 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 ### BEWARE
 - HTTPS or localhost required
   - Host must be localhost or an https connection
-- Internet Explorer<span id="Internet Explorer" ref="old md title link"></span>
+- Internet Explorer<span id="internet-explorer" ref="old md title link"></span>
   - Internet Explorer is not at all supported. Sorry not sorry
 
 ### Table of Contents
