@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp = require("./videoHelp");
@@ -7,7 +7,7 @@ var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src
 /**
  * Render WebCam Component
  */
-var WebCamComponent = (function () {
+var WebCamComponent = /** @class */ (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
@@ -75,7 +75,7 @@ var WebCamComponent = (function () {
         var config = {
             attributes: true,
             childList: true,
-            characterData: true
+            characterData: true,
         };
         this.observer.observe(this.element.nativeElement, config);
         this.onResize = function () { this.resizeVideo(); }.bind(this);
@@ -180,16 +180,21 @@ var WebCamComponent = (function () {
                 try {
                     // try object
                     _this.browser.mediaDevices.getUserMedia(optionObject)
-                        .then(function (stream) { return resolve(stream); })["catch"](function (objErr) {
-                        // option object fails
-                        // try string syntax
-                        // if the config object failes, we try a config string
-                        _this.browser.mediaDevices.getUserMedia(optionString)
-                            .then(function (stream) { return resolve(stream); })["catch"](function (strErr) {
+                        .then(function (stream) { return resolve(stream); })
+                        .catch(function (objErr) {
+                        try {
+                            _this.browser.mediaDevices.getUserMedia(optionString)
+                                .then(function (stream) { return resolve(stream); })
+                                .catch(function (strErr) {
+                                console.error(objErr);
+                                console.error(strErr);
+                                reject(new Error('Both configs failed. Neither object nor string works'));
+                            });
+                        }
+                        catch (e) {
                             console.error(objErr);
-                            console.error(strErr);
-                            reject(new Error('Both configs failed. Neither object nor string works'));
-                        });
+                            reject(objErr);
+                        }
                     });
                 }
                 catch (e) {
@@ -202,7 +207,7 @@ var WebCamComponent = (function () {
             _this.videoSrc = _this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
             _this.processSuccess(stream);
             _this.stream = stream;
-        })["catch"](function (err) {
+        }).catch(function (err) {
             _this.onError.emit(err);
         });
     };
@@ -312,8 +317,8 @@ var WebCamComponent = (function () {
     ];
     /** @nocollapse */
     WebCamComponent.ctorParameters = function () { return [
-        { type: platform_browser_1.DomSanitizer },
-        { type: core_1.ElementRef },
+        { type: platform_browser_1.DomSanitizer, },
+        { type: core_1.ElementRef, },
     ]; };
     WebCamComponent.propDecorators = {
         'mime': [{ type: core_1.Input },],
@@ -321,7 +326,7 @@ var WebCamComponent = (function () {
         'refChange': [{ type: core_1.Output },],
         'options': [{ type: core_1.Input },],
         'onSuccess': [{ type: core_1.Output },],
-        'onError': [{ type: core_1.Output },]
+        'onError': [{ type: core_1.Output },],
     };
     return WebCamComponent;
 }());
