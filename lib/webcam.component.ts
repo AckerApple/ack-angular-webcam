@@ -2,9 +2,7 @@ import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/cor
 import { DomSanitizer } from '@angular/platform-browser';
 import * as videoHelp from "./videoHelp"
 
-const template = `
-<video id="video" *ngIf="isSupportWebRTC && videoSrc" [src]="videoSrc" autoplay>Video stream not available</video>
-`
+const template = `<video id="video" *ngIf="isSupportWebRTC && videoSrc" autoplay playsinline>Video stream not available</video>`
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
  */
@@ -27,7 +25,7 @@ export interface MediaDevice {
   isSupportWebRTC: boolean = false
   isFallback: boolean = false
   browser: any
-  observer
+  observer:MutationObserver
   onResize
   stream
   
@@ -68,7 +66,7 @@ export interface MediaDevice {
 
   afterInitCycles(){
     // getUserMedia() feature detection for older browser
-    const media = this.getMedia();
+    const media = this.getMedia()
 
     // Older browsers might not implement mediaDevices at all, so we set an empty object first
     if ((this.browser.mediaDevices === undefined) && !!media) {
@@ -79,10 +77,14 @@ export interface MediaDevice {
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
     if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!media) {
-      this.browser.mediaDevices.getUserMedia = (constraints) => {
-        return new Promise((resolve, reject) => {
-          media.call(this.browser, constraints, resolve, reject);
-        });
+      this.browser.mediaDevices.getUserMedia = constraints=>{
+        return new Promise((resolve, reject)=>{
+          const userMedia = media.call(this.browser, constraints, resolve, reject);
+
+          if( userMedia.then ){
+            userMedia.then( stream=>this.applyStream(stream) )
+          }
+        })
       }
     }
     
@@ -98,6 +100,18 @@ export interface MediaDevice {
     this.createVideoResizer()
     this.startCapturingVideo();
     this.onResize()
+  }
+
+  applyStream(stream){
+    let webcamUrl = URL.createObjectURL(stream);
+    this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+
+    //wait for a cycle to render the html video element
+    setTimeout(()=>{
+      const videoElm = this.getVideoElm()
+      videoElm.src = this.videoSrc
+      videoElm.srcObject = stream//Safari      
+    }, 0)
   }
 
   createVideoResizer(){
@@ -191,8 +205,9 @@ export interface MediaDevice {
   }
 
   getVideoElm(){
+    const native = this.element.nativeElement
     const elmType = this.isFallback ? 'object' : 'video'
-    return this.element.nativeElement.getElementsByTagName(elmType)[0]
+    return native.getElementsByTagName(elmType)[0]
   }
 
   /**
@@ -246,14 +261,15 @@ export interface MediaDevice {
       });
     };
 
-    promisifyGetUserMedia().then((stream) => {
-      let webcamUrl = URL.createObjectURL(stream);
-      this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+    promisifyGetUserMedia()
+    .then(stream=>{
+      this.applyStream(stream)
       this.processSuccess(stream)
       this.stream = stream
-    }).catch((err) => {
-      this.onError.emit(err);
-    });
+    }).catch(err=>{
+      this.onError.emit(err)
+      return Promise.reject(err)
+    })
   }
 
   processSuccess(stream?){

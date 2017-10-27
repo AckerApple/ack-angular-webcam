@@ -21,7 +21,7 @@ export declare class WebCamComponent {
     isSupportWebRTC: boolean;
     isFallback: boolean;
     browser: any;
-    observer: any;
+    observer: MutationObserver;
     onResize: any;
     stream: any;
     mime: string;
@@ -35,6 +35,7 @@ export declare class WebCamComponent {
     ngAfterViewInit(): void;
     getMedia(): any;
     afterInitCycles(): void;
+    applyStream(stream: any): void;
     createVideoResizer(): void;
     applyDefaults(): void;
     /**

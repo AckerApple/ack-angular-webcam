@@ -1,0 +1,8 @@
+{
+  "init:angular:test": {
+    "addScripts": "yes",
+    "writeAngularCliJson": "yes",
+    "writeKarmaConfig": "yes",
+    "paramTestFolder": "false"
+  }
+}

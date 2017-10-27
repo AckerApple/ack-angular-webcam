@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp = require("./videoHelp");
-var template = "\n<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" [src]=\"videoSrc\" autoplay>Video stream not available</video>\n";
+var template = "<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" autoplay playsinline>Video stream not available</video>";
 /**
  * Render WebCam Component
  */
@@ -53,7 +53,10 @@ var WebCamComponent = /** @class */ (function () {
         if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!media) {
             this.browser.mediaDevices.getUserMedia = function (constraints) {
                 return new Promise(function (resolve, reject) {
-                    media.call(_this.browser, constraints, resolve, reject);
+                    var userMedia = media.call(_this.browser, constraints, resolve, reject);
+                    if (userMedia.then) {
+                        userMedia.then(function (stream) { return _this.applyStream(stream); });
+                    }
                 });
             };
         }
@@ -68,6 +71,17 @@ var WebCamComponent = /** @class */ (function () {
         this.createVideoResizer();
         this.startCapturingVideo();
         this.onResize();
+    };
+    WebCamComponent.prototype.applyStream = function (stream) {
+        var _this = this;
+        var webcamUrl = URL.createObjectURL(stream);
+        this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+        //wait for a cycle to render the html video element
+        setTimeout(function () {
+            var videoElm = _this.getVideoElm();
+            videoElm.src = _this.videoSrc;
+            videoElm.srcObject = stream; //Safari      
+        }, 0);
     };
     WebCamComponent.prototype.createVideoResizer = function () {
         var _this = this;
@@ -149,8 +163,9 @@ var WebCamComponent = /** @class */ (function () {
         return dim;
     };
     WebCamComponent.prototype.getVideoElm = function () {
+        var native = this.element.nativeElement;
         var elmType = this.isFallback ? 'object' : 'video';
-        return this.element.nativeElement.getElementsByTagName(elmType)[0];
+        return native.getElementsByTagName(elmType)[0];
     };
     /**
      * Setup web camera using native browser API
@@ -202,13 +217,14 @@ var WebCamComponent = /** @class */ (function () {
                 }
             });
         };
-        promisifyGetUserMedia().then(function (stream) {
-            var webcamUrl = URL.createObjectURL(stream);
-            _this.videoSrc = _this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+        promisifyGetUserMedia()
+            .then(function (stream) {
+            _this.applyStream(stream);
             _this.processSuccess(stream);
             _this.stream = stream;
         }).catch(function (err) {
             _this.onError.emit(err);
+            return Promise.reject(err);
         });
     };
     WebCamComponent.prototype.processSuccess = function (stream) {
