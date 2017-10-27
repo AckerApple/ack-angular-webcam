@@ -3,8 +3,11 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 
 [Demo Page](https://ackerapple.github.io/ack-angular-webcam/)
 
-### Internet Explorer
-> Internet Explorer is not at all supported. Sorry not sorry
+### BEWARE
+- HTTPS or localhost required
+  - Host must be localhost or an https connection
+- Internet Explorer<span name="internet-explorer" id="internet-explorer" ref="old md title link"></span>
+  - Internet Explorer is not at all supported. Sorry not sorry
 
 ### Table of Contents
 
@@ -32,10 +35,6 @@ A cross-browser angular2 component, it will use the browser's native `getUserMed
 This component is based on [MediaDevices](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices)  and [getUserMedia.js Polyfill](https://github.com/addyosmani/getUserMedia.js).
 
 Please, check original repository for clear understanding
-
-### Internet Explorer 11
-
-A polyfill will be needed. The function Object.assign and other missing functionality in Internet Explorer will need to be polyfilled.
 
 ## Getting Started
 
