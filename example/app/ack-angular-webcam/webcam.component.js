@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp = require("./videoHelp");
-var template = "<video id=\"video\" *ngIf=\"isSupportWebRTC && videoSrc\" autoplay playsinline>Video stream not available</video>";
+var template = "<video id=\"video\" *ngIf=\"(isSupportUserMedia||isSupportWebRTC)\" autoplay=\"\" playsinline=\"\">Video stream not available</video>";
 /**
  * Render WebCam Component
  */
@@ -73,15 +73,12 @@ var WebCamComponent = /** @class */ (function () {
         this.onResize();
     };
     WebCamComponent.prototype.applyStream = function (stream) {
-        var _this = this;
-        var webcamUrl = URL.createObjectURL(stream);
-        this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
-        //wait for a cycle to render the html video element
-        setTimeout(function () {
-            var videoElm = _this.getVideoElm();
-            videoElm.src = _this.videoSrc;
-            videoElm.srcObject = stream; //Safari      
-        }, 0);
+        var videoElm = this.getVideoElm();
+        videoElm.srcObject = stream; //Safari
+        //old school way of setting video stream by url string
+        //let webcamUrl = URL.createObjectURL(stream);
+        //this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+        //videoElm.src = this.videoSrc
     };
     WebCamComponent.prototype.createVideoResizer = function () {
         var _this = this;

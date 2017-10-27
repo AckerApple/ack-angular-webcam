@@ -1,10 +1,10 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
-## [1.4.0] - 
+## [1.4.0] - 2017-10-26
 - angular 4.2.4 to 4.4.6
 - core-js 2.4.1 to 4.4.6
-- (beta) support for Safari getUserMedia()
+- New Safari getUserMedia() is working!!!!
 
 ## [1.3.9] - 2017-08-04
 - Added back in ref to cast base64 to dataForm

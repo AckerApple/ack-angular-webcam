@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/cor
 import { DomSanitizer } from '@angular/platform-browser';
 import * as videoHelp from "./videoHelp"
 
-const template = `<video id="video" *ngIf="isSupportWebRTC && videoSrc" autoplay playsinline>Video stream not available</video>`
+const template = `<video id="video" *ngIf="(isSupportUserMedia||isSupportWebRTC)" autoplay="" playsinline="">Video stream not available</video>`
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
  */
@@ -103,15 +103,13 @@ export interface MediaDevice {
   }
 
   applyStream(stream){
-    let webcamUrl = URL.createObjectURL(stream);
-    this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+    const videoElm = this.getVideoElm()
+    videoElm.srcObject = stream//Safari
 
-    //wait for a cycle to render the html video element
-    setTimeout(()=>{
-      const videoElm = this.getVideoElm()
-      videoElm.src = this.videoSrc
-      videoElm.srcObject = stream//Safari      
-    }, 0)
+    //old school way of setting video stream by url string
+    //let webcamUrl = URL.createObjectURL(stream);
+    //this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
+    //videoElm.src = this.videoSrc
   }
 
   createVideoResizer(){
