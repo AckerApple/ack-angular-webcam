@@ -1,6 +1,6 @@
 import { ElementRef, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import * as videoHelp from "./videoHelp";
+import { Options, Fallback } from "./videoHelp";
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
  */
@@ -15,7 +15,7 @@ export interface MediaDevice {
 export declare class WebCamComponent {
     private sanitizer;
     private element;
-    flashPlayer: videoHelp.Fallback;
+    flashPlayer: Fallback;
     videoSrc: any;
     isSupportUserMedia: boolean;
     isSupportWebRTC: boolean;
@@ -25,15 +25,17 @@ export declare class WebCamComponent {
     onResize: any;
     stream: any;
     mime: string;
+    useParentWidthHeight: boolean;
     ref: any;
     refChange: EventEmitter<{}>;
-    options: videoHelp.Options;
-    onSuccess: EventEmitter<{}>;
-    onError: EventEmitter<{}>;
+    options: Options;
+    success: EventEmitter<{}>;
+    error: Error;
+    errorChange: EventEmitter<Error>;
+    catcher: EventEmitter<Error>;
     constructor(sanitizer: DomSanitizer, element: ElementRef);
     ngOnInit(): void;
     ngAfterViewInit(): void;
-    getMedia(): any;
     afterInitCycles(): void;
     applyStream(stream: any): void;
     createVideoResizer(): void;
@@ -78,5 +80,4 @@ export declare class WebCamComponent {
         form?: FormData;
     }): Promise<FormData>;
     dataUriToFormData(base64: any, options: any): FormData;
-    videoHelp(): typeof videoHelp;
 }

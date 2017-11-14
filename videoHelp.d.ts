@@ -1,4 +1,6 @@
 import { EventEmitter } from "@angular/core";
+export declare const browser: any;
+export declare function getMedia(): any;
 /**
  * Component options structure interface
  */
