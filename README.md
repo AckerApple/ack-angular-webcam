@@ -1,26 +1,30 @@
 # ack-angular-webcam
-A cross-browser angular2 component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available.
+A cross-browser Angular component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available.
 
 [Demo Page](https://ackerapple.github.io/ack-angular-webcam/)
 
 ### BEWARE
 - HTTPS or localhost required
   - Host must be localhost or an https connection
+  - SAFARI seems to always always always require an https connection (no localhost)
 - Internet Explorer<span name="internet-explorer" id="internet-explorer" ref="old md title link"></span>
   - Internet Explorer is not at all supported. Sorry not sorry
+  - **Internet Edge** is fully supported
 
 ### Table of Contents
 
 - [Screenshot](#screenshot)
 - [Notes](#notes)
-- [Getting Started](#getting-started)
-  - [Installation](#installation)
-  - [Importing](#importing)
-  - [Example Usage](#example-usage)
-- [Options](#options)
-- [Flash Fallback](#flash-fallbak)
-- [Example and Tests](#example-and-tests)
-  - [Locally-Test](#locally-test)
+- [ack-webcam Component](#ack-webcam-component)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+    - [Importing](#importing)
+    - [Example Usage](#example-usage)
+  - [Options](#options)
+  - [Flash Fallback](#flash-fallbak)
+  - [Example and Tests](#example-and-tests)
+    - [Locally-Test](#locally-test)
+- [ack-media-devices Directive](#ack-media-devices-directive)
 - [WoRk On ThIs PaCkAgE](#work-on-this-package)
 - [If You Like ack-webpack](#if-you-like-ack-webpack)
 - [Credits](#credits)
@@ -36,6 +40,8 @@ This component is based on [MediaDevices](https://developer.mozilla.org/en-US/do
 
 Please, check original repository for clear understanding
 
+# ack-webcam Component
+
 ## Getting Started
 
 ### Installation
@@ -44,19 +50,17 @@ npm install ack-angular-webcam --save-dev
 ```
 
 ### Importing
-Use webcam as a pure angular2 component
 
-+ Add component into your module
 ```javascript
-import { WebCamComponent } from 'ack-angular-webcam';
+import { WebCamModule } from 'ack-angular-webcam';
 
 @NgModule({
   imports: [
-    BrowserModule
+    BrowserModule,
+    WebCamModule
   ],
   declarations: [
-    AppComponent,
-    WebCamComponent
+    AppComponent
   ],
   bootstrap: [ AppComponent ]
 })
@@ -72,8 +76,16 @@ app.component.ts
 import { Component } from '@angular/core';
 import { Http, Request } from '@angular/http';
 
+//imported here just for type checking. Optional
+import { WebCamComponent } from 'ack-angular-webcam';
+
 const template = `
-<ack-webcam [(ref)]="webcam" [options]="options" (onSuccess)="onCamSuccess($event)" (onError)="onCamError($event)"></ack-webcam>
+<ack-webcam
+  [(ref)]   = "webcam"
+  [options] = "options"
+  (success) = "onCamSuccess($event)"
+  (catch)   = "onCamError($event)"
+></ack-webcam>
 <button (click)="genBase64()"> generate base64 </button>
 <button (click)="genPostData()"> generate post data </button>
 `
@@ -82,8 +94,8 @@ const template = `
   selector:'app-component',
   template:template
 }) export class AppComponent{
-  public webcam//will be populated by ack-webcam [(ref)]
-  public base64
+  webcam:WebCamComponent//will be populated by <ack-webcam [(ref)]="webcam">
+  base64
 
   constructor(public http:Http){}
 
@@ -131,7 +143,7 @@ const template = `
   fallbackSrc: 'jscam_canvas_only.swf',
   fallbackQuality: 85,
   cameraType: 'front' || 'back'
-};
+}
 ```
 
 Tested for tablet (Android 4.4.2 GT-N5110) and phone (Android 4.1.2 GT-I8268)
@@ -175,6 +187,24 @@ npm run watch
 ```
 
 > After step 4, a web browser should auto open a demo page and any code changes you perform to ack-angular-webcam will cause an auto-refresh of browser
+
+# ack-media-devices Directive
+Get listing of users media devices
+
+```html
+<ack-media-devices
+  [(array)]="devices"
+  [(error)]="deviceListingError"
+></ack-media-devices>
+```
+
+## Bindings
+```typescript
+[(array)]:device[] = []
+[(error)]
+(catch) = new EventEmitter()
+```
+
 
 ## WoRk On ThIs PaCkAgE
 Nobodies perfect

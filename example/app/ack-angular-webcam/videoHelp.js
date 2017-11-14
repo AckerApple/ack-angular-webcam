@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
+exports.browser = navigator;
+function getMedia() {
+    return exports.browser.getUserMedia
+        || exports.browser.webkitGetUserMedia
+        || exports.browser.mozGetUserMedia
+        || exports.browser.msGetUserMedia;
+}
+exports.getMedia = getMedia;
 function dataUriToBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;

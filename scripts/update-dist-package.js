@@ -3,16 +3,16 @@ const fs = require('fs')
 /* package version copy */
   const rootPack = require('../package.json')
   const packPath = require.resolve('../dist/package.json')
-  const packLockPath = require.resolve('../dist/package-lock.json')
+  //const packLockPath = require.resolve('../dist/package-lock.json')
   const pack = require(packPath)
-  const packLock = require(packLockPath)
+  //const packLock = require(packLockPath)
 
   pack.version = rootPack.version
-  packLock.version = rootPack.version
+  //packLock.version = rootPack.version
   pack.jsDependencies = rootPack.jsDependencies
 
   fs.writeFileSync(packPath, JSON.stringify(pack, null, 2))
-  fs.writeFileSync(packLockPath, JSON.stringify(packLock, null, 2))
+  //fs.writeFileSync(packLockPath, JSON.stringify(packLock, null, 2))
 /* end : package version copy */
 
 /* copy readme */

@@ -1,6 +1,12 @@
 import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import * as videoHelp from "./videoHelp"
+import {
+  browser,
+  getMedia,
+  Options,
+  dataUriToFormData,
+  Fallback
+} from "./videoHelp"
 
 const template = `<video id="video" *ngIf="(isSupportUserMedia||isSupportWebRTC)" autoplay="" playsinline="">Video stream not available</video>`
 /**
@@ -17,9 +23,10 @@ export interface MediaDevice {
  */
 @Component({
   selector: 'ack-webcam',
-  template: template
+  template: template,
+  exportAs: 'webcam'
 }) export class WebCamComponent {
-  flashPlayer:videoHelp.Fallback
+  flashPlayer:Fallback
   videoSrc: any
   isSupportUserMedia: boolean = false
   isSupportWebRTC: boolean = false
@@ -30,22 +37,28 @@ export interface MediaDevice {
   stream
   
   @Input() mime = 'image/jpeg'
+  @Input() useParentWidthHeight:boolean = false
 
   @Input() ref
   @Output() refChange = new EventEmitter()
   
-  @Input() options: videoHelp.Options;
-  @Output() onSuccess = new EventEmitter()
-  @Output() onError = new EventEmitter()
+  @Input() options: Options;
+  @Output() success = new EventEmitter()
+  
+  @Input() error:Error
+  @Output() errorChange:EventEmitter<Error> = new EventEmitter()
+  @Output('catch') catcher:EventEmitter<Error> = new EventEmitter()
 
-  constructor(private sanitizer: DomSanitizer, private element: ElementRef) {
-    this.browser = <any>navigator;
-    //this.onResize = function(){}
-  }
+  constructor(private sanitizer: DomSanitizer, private element: ElementRef){}
 
   ngOnInit(){
-    this.isSupportUserMedia = this.getMedia()!=null ? true : false
-    this.isSupportWebRTC = !!(this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia);
+    this.isSupportUserMedia = getMedia()!=null ? true : false
+    this.isSupportUserMedia = false
+    this.isSupportWebRTC = !!(browser.mediaDevices && browser.mediaDevices.getUserMedia);
+
+    //this.element.nativeElement.style.display='block'
+    //this.element.nativeElement.style.width='100%'
+    //this.element.nativeElement.style.height='100%'
   }
 
   ngAfterViewInit() {
@@ -57,29 +70,21 @@ export interface MediaDevice {
     this.onResize()
   }*/
 
-  getMedia(){
-    return this.browser.getUserMedia
-    || this.browser.webkitGetUserMedia
-    || this.browser.mozGetUserMedia
-    || this.browser.msGetUserMedia
-  }
-
   afterInitCycles(){
-    // getUserMedia() feature detection for older browser
-    const media = this.getMedia()
+    const media = getMedia()
 
     // Older browsers might not implement mediaDevices at all, so we set an empty object first
-    if ((this.browser.mediaDevices === undefined) && !!media) {
-      this.browser.mediaDevices = {};
+    if ((browser.mediaDevices === undefined) && !!media) {
+      browser.mediaDevices = {};
     }
 
     // Some browsers partially implement mediaDevices. We can't just assign an object
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
-    if ((this.browser.mediaDevices && this.browser.mediaDevices.getUserMedia === undefined) && !!media) {
-      this.browser.mediaDevices.getUserMedia = constraints=>{
+    if ((browser.mediaDevices && browser.mediaDevices.getUserMedia === undefined) && !!media) {
+      browser.mediaDevices.getUserMedia = constraints=>{
         return new Promise((resolve, reject)=>{
-          const userMedia = media.call(this.browser, constraints, resolve, reject);
+          const userMedia = media.call(browser, constraints, resolve, reject);
 
           if( userMedia.then ){
             userMedia.then( stream=>this.applyStream(stream) )
@@ -87,14 +92,8 @@ export interface MediaDevice {
         })
       }
     }
-    
-    //template ref to class object
-    /*this.ref = Object.assign(this, this.ref, {
-      element:this.element,
-      options:this.options,
-      onSuccess:this.onSuccess,
-      onError:this.onError
-    })*/
+
+    //deprecated. use angular hash template referencing    
     setTimeout(()=>this.refChange.emit(this), 0)
 
     this.createVideoResizer()
@@ -104,12 +103,7 @@ export interface MediaDevice {
 
   applyStream(stream){
     const videoElm = this.getVideoElm()
-    videoElm.srcObject = stream//Safari
-
-    //old school way of setting video stream by url string
-    //let webcamUrl = URL.createObjectURL(stream);
-    //this.videoSrc = this.sanitizer.bypassSecurityTrustResourceUrl(webcamUrl);
-    //videoElm.src = this.videoSrc
+    videoElm.srcObject = stream
   }
 
   createVideoResizer(){
@@ -118,8 +112,8 @@ export interface MediaDevice {
     const config = {
       attributes: true,
       childList: true,
-      characterData: true,
-      // subtree: true
+      characterData: true
+      //,subtree: true
     }
     this.observer.observe(this.element.nativeElement, config);
 
@@ -128,7 +122,7 @@ export interface MediaDevice {
   }
 
   applyDefaults(){
-    this.options = this.options || <videoHelp.Options>{}
+    this.options = this.options || <Options>{}
     this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
     this.options.fallbackMode = this.options.fallbackMode || 'callback';
     this.options.fallbackQuality = this.options.fallbackQuality || 200;
@@ -146,9 +140,9 @@ export interface MediaDevice {
    */
   onWebRTC(): any {
     // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
-    if (this.browser.mediaDevices.enumerateDevices && this.options.video) {
+    if (browser.mediaDevices.enumerateDevices && this.options.video) {
       const cameraType = this.options.cameraType;
-      this.browser.mediaDevices.enumerateDevices().then((devices) => {
+      browser.mediaDevices.enumerateDevices().then((devices) => {
         devices.forEach((device: MediaDevice) => {
           if (device && device.kind === 'videoinput') {
             if (device.label.toLowerCase().search(cameraType) > -1) {
@@ -172,8 +166,10 @@ export interface MediaDevice {
     video.width = 0;
     video.height = 0;
     
-    let width = this.options.width || parseInt(this.element.nativeElement.offsetWidth, 10)
-    let height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
+    const elm = this.useParentWidthHeight ? this.element.nativeElement.parentNode : this.element.nativeElement
+
+    let width = this.options.width || parseInt(elm.offsetWidth, 10)
+    let height = this.options.height || parseInt(elm.offsetHeight, 10)
 
     if(!width || !height){
       width = 320
@@ -234,25 +230,12 @@ export interface MediaDevice {
     // Promisify async callback's for angular2 change detection
     const promisifyGetUserMedia = () => {
       return new Promise<string>((resolve, reject) => {
-        // first we try if getUserMedia supports the config object
         try {
-          // try object
-          this.browser.mediaDevices.getUserMedia(optionObject)
-            .then((stream: any) => resolve(stream))
-            .catch((objErr: any) => {
-              try{
-                this.browser.mediaDevices.getUserMedia(optionString)
-                  .then((stream: any) => resolve(stream))
-                  .catch((strErr: any) => {
-                    console.error(objErr)
-                    console.error(strErr)
-                    reject(new Error('Both configs failed. Neither object nor string works'))
-                });
-              }catch(e){
-                console.error(objErr)
-                reject(objErr)
-              }
-          });
+          browser.mediaDevices.getUserMedia(optionObject)
+          .then((stream: any) => resolve(stream))
+          .catch((objErr: any) => {
+            reject(objErr)
+          })
         } catch (e) {
           reject(e);
         }
@@ -265,7 +248,8 @@ export interface MediaDevice {
       this.processSuccess(stream)
       this.stream = stream
     }).catch(err=>{
-      this.onError.emit(err)
+      this.errorChange.emit(this.error=err)
+      this.catcher.emit(err)
       return Promise.reject(err)
     })
   }
@@ -274,7 +258,7 @@ export interface MediaDevice {
     if (this.isFallback) {
       this.setupFallback()
     }else{
-      this.onSuccess.emit(stream)
+      this.success.emit(stream)
     }
   }
 
@@ -369,21 +353,17 @@ export interface MediaDevice {
   setupFallback(): void {
     this.isFallback = true
     const vidElm = this.getVideoElm() || this.createVidElmOb()
-    this.flashPlayer = new videoHelp.Fallback( vidElm )
+    this.flashPlayer = new Fallback( vidElm )
   }
 
   /** single image to FormData */
   captureAsFormData(options?:{mime?:string, fileName?:string, form?:FormData}){
     options = options || {}
     return this.getBase64(options.mime)
-    .then( base64=>videoHelp.dataUriToFormData(base64, {fileName:options.fileName}) )
+    .then( base64=>dataUriToFormData(base64, {fileName:options.fileName}) )
   }
 
   dataUriToFormData(base64, options){
-    return videoHelp.dataUriToFormData(base64, {fileName:options.fileName})
-  }
-
-  videoHelp(){
-    return videoHelp
+    return dataUriToFormData(base64, {fileName:options.fileName})
   }
 }

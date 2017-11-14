@@ -1,6 +1,17 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.5.0] - 2017-11-14
+- Cleaned a bit of unnecessary code
+- Added WebCamModule
+- Added ack-media-devices
+- Added useParentWidthHeight binding to ack-webcam
+### Breaking Changes
+- ack-webcam (onSuccess) is now (success)
+- ack-webcam (onError) is now (catch)
+- import into NgModule => WebCamModule AND NOT WebCamComponent
+  - not a breaking change but new directives/components will not work otherwise
+
 ## [1.4.0] - 2017-10-26
 - angular 4.2.4 to 4.4.6
 - core-js 2.4.1 to 4.4.6

@@ -1,16 +1,15 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { WebCamComponent } from './ack-angular-webcam/index';
+import { WebCamModule } from './ack-angular-webcam/index';
 import { AppComponent } from './app.component';
 
 @NgModule({
   imports: [
-    BrowserModule
+    BrowserModule,
+    WebCamModule
   ],
   declarations: [
-    AppComponent,
-    WebCamComponent
+    AppComponent
   ],
-  providers: [],
   bootstrap: [ AppComponent ]
 }) export class AppModule {}

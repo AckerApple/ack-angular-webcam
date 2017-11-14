@@ -1,5 +1,14 @@
 import { EventEmitter } from "@angular/core"
 
+
+export const browser = <any>navigator
+export function getMedia(){
+  return browser.getUserMedia
+  || browser.webkitGetUserMedia
+  || browser.mozGetUserMedia
+  || browser.msGetUserMedia
+}
+
 /**
  * Component options structure interface
  */
