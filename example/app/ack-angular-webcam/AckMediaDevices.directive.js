@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var videoHelp_1 = require("./videoHelp");
-var AckMediaDevices = /** @class */ (function () {
+var AckMediaDevices = (function () {
     function AckMediaDevices() {
         this.array = [];
         this.arrayChange = new core_1.EventEmitter();
@@ -30,11 +30,11 @@ var AckMediaDevices = /** @class */ (function () {
     /** @nocollapse */
     AckMediaDevices.ctorParameters = function () { return []; };
     AckMediaDevices.propDecorators = {
-        'array': [{ type: core_1.Input },],
-        'arrayChange': [{ type: core_1.Output },],
-        'error': [{ type: core_1.Input },],
-        'errorChange': [{ type: core_1.Output },],
-        'catcher': [{ type: core_1.Output, args: ['catch',] },],
+        "array": [{ type: core_1.Input },],
+        "arrayChange": [{ type: core_1.Output },],
+        "error": [{ type: core_1.Input },],
+        "errorChange": [{ type: core_1.Output },],
+        "catcher": [{ type: core_1.Output, args: ['catch',] },],
     };
     return AckMediaDevices;
 }());

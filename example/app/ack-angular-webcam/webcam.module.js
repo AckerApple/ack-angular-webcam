@@ -8,7 +8,7 @@ var declarations = [
     webcam_component_1.WebCamComponent,
     AckMediaDevices_directive_1.AckMediaDevices
 ];
-var WebCamModule = /** @class */ (function () {
+var WebCamModule = (function () {
     function WebCamModule() {
     }
     WebCamModule.decorators = [

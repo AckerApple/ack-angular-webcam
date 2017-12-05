@@ -7,7 +7,7 @@ var template = "<video id=\"video\" *ngIf=\"(isSupportUserMedia||isSupportWebRTC
 /**
  * Render WebCam Component
  */
-var WebCamComponent = /** @class */ (function () {
+var WebCamComponent = (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
@@ -37,7 +37,13 @@ var WebCamComponent = /** @class */ (function () {
     /*ngOnChanges() {
       this.onResize()
     }*/
-    WebCamComponent.prototype.afterInitCycles = function () {
+    /*ngOnChanges() {
+        this.onResize()
+      }*/
+    WebCamComponent.prototype.afterInitCycles = /*ngOnChanges() {
+        this.onResize()
+      }*/
+    function () {
         var _this = this;
         var media = videoHelp_1.getMedia();
         // Older browsers might not implement mediaDevices at all, so we set an empty object first
@@ -57,7 +63,7 @@ var WebCamComponent = /** @class */ (function () {
                 });
             };
         }
-        //deprecated. use angular hash template referencing    
+        //deprecated. use angular hash template referencing
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
         this.startCapturingVideo();
@@ -95,7 +101,15 @@ var WebCamComponent = /** @class */ (function () {
      * Switch to facing mode and setup web camera
      * @returns {void}
      */
-    WebCamComponent.prototype.onWebRTC = function () {
+    /**
+       * Switch to facing mode and setup web camera
+       * @returns {void}
+       */
+    WebCamComponent.prototype.onWebRTC = /**
+       * Switch to facing mode and setup web camera
+       * @returns {void}
+       */
+    function () {
         var _this = this;
         // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
         if (videoHelp_1.browser.mediaDevices.enumerateDevices && this.options.video) {
@@ -157,7 +171,15 @@ var WebCamComponent = /** @class */ (function () {
      * Setup web camera using native browser API
      * @returns {void}
      */
-    WebCamComponent.prototype.setWebcam = function () {
+    /**
+       * Setup web camera using native browser API
+       * @returns {void}
+       */
+    WebCamComponent.prototype.setWebcam = /**
+       * Setup web camera using native browser API
+       * @returns {void}
+       */
+    function () {
         var _this = this;
         // constructing a getUserMedia config-object and
         // an string (we will try both)
@@ -212,7 +234,15 @@ var WebCamComponent = /** @class */ (function () {
      * Start capturing video stream
      * @returns {void}
      */
-    WebCamComponent.prototype.startCapturingVideo = function () {
+    /**
+       * Start capturing video stream
+       * @returns {void}
+       */
+    WebCamComponent.prototype.startCapturingVideo = /**
+       * Start capturing video stream
+       * @returns {void}
+       */
+    function () {
         if (!this.isFallback && this.isSupportWebRTC) {
             return this.onWebRTC();
         }
@@ -234,7 +264,9 @@ var WebCamComponent = /** @class */ (function () {
         return document.createElement('canvas');
     };
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
-    WebCamComponent.prototype.getBase64 = function (mime) {
+    /** returns promise . @mime - null=png . Also accepts image/jpeg */
+    WebCamComponent.prototype.getBase64 = /** returns promise . @mime - null=png . Also accepts image/jpeg */
+    function (mime) {
         if (this.isFallback) {
             return this.flashPlayer.captureBase64(mime || this.mime);
             //return this.getFallbackBase64(mime)
@@ -254,7 +286,9 @@ var WebCamComponent = /** @class */ (function () {
         canvas.height = di.height;
     };
     /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
-    WebCamComponent.prototype.createVidElmOb = function () {
+    /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
+    WebCamComponent.prototype.createVidElmOb = /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
+    function () {
         var rtnElm = document.createElement('object');
         rtnElm.innerHTML = 'Video stream not available';
         rtnElm.setAttribute('type', 'application/x-shockwave-flash');
@@ -281,13 +315,21 @@ var WebCamComponent = /** @class */ (function () {
     /**
      * Implement fallback external interface
      */
-    WebCamComponent.prototype.setupFallback = function () {
+    /**
+       * Implement fallback external interface
+       */
+    WebCamComponent.prototype.setupFallback = /**
+       * Implement fallback external interface
+       */
+    function () {
         this.isFallback = true;
         var vidElm = this.getVideoElm() || this.createVidElmOb();
         this.flashPlayer = new videoHelp_1.Fallback(vidElm);
     };
     /** single image to FormData */
-    WebCamComponent.prototype.captureAsFormData = function (options) {
+    /** single image to FormData */
+    WebCamComponent.prototype.captureAsFormData = /** single image to FormData */
+    function (options) {
         options = options || {};
         return this.getBase64(options.mime)
             .then(function (base64) { return videoHelp_1.dataUriToFormData(base64, { fileName: options.fileName }); });
@@ -308,15 +350,15 @@ var WebCamComponent = /** @class */ (function () {
         { type: core_1.ElementRef, },
     ]; };
     WebCamComponent.propDecorators = {
-        'mime': [{ type: core_1.Input },],
-        'useParentWidthHeight': [{ type: core_1.Input },],
-        'ref': [{ type: core_1.Input },],
-        'refChange': [{ type: core_1.Output },],
-        'options': [{ type: core_1.Input },],
-        'success': [{ type: core_1.Output },],
-        'error': [{ type: core_1.Input },],
-        'errorChange': [{ type: core_1.Output },],
-        'catcher': [{ type: core_1.Output, args: ['catch',] },],
+        "mime": [{ type: core_1.Input },],
+        "useParentWidthHeight": [{ type: core_1.Input },],
+        "ref": [{ type: core_1.Input },],
+        "refChange": [{ type: core_1.Output },],
+        "options": [{ type: core_1.Input },],
+        "success": [{ type: core_1.Output },],
+        "error": [{ type: core_1.Input },],
+        "errorChange": [{ type: core_1.Output },],
+        "catcher": [{ type: core_1.Output, args: ['catch',] },],
     };
     return WebCamComponent;
 }());

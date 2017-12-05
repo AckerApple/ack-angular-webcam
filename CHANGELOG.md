@@ -1,6 +1,13 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.6.0] - 2017-12-05
+- BREAKING CHANGES
+  - Folder "lib" renamed to "src"
+  - Updated Angular4 to Angular5
+  - Angular4 and 5 are not compatible
+  - Stuck in Angular4? User v1.5.0
+
 ## [1.5.0] - 2017-11-14
 - Cleaned a bit of unnecessary code
 - Added WebCamModule
