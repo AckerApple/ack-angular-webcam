@@ -1,6 +1,11 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.7.0] - 2018-01-01
+- Better camera auto size calculating
+- More device info and filtering
+- Started creating the ability to switch devices
+
 ## [1.6.0] - 2017-12-05
 - BREAKING CHANGES
   - Folder "lib" renamed to "src"

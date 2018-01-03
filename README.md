@@ -20,7 +20,7 @@ A cross-browser Angular component, it will use the browser's native `getUserMedi
     - [Installation](#installation)
     - [Importing](#importing)
     - [Example Usage](#example-usage)
-  - [Options](#options)
+  - [Bindings](#bindings)
   - [Flash Fallback](#flash-fallbak)
   - [Example and Tests](#example-and-tests)
     - [Locally-Test](#locally-test)
@@ -131,10 +131,23 @@ const template = `
 }
 ```
 
-## Options
+## Bindings
+ack-angular-webcam inputs and outputs
 
-```javascript
-{
+```typescript
+[videoDevice]:MediaDeviceInfo
+[videoDeviceId]:string
+[audioDeviceId]:string
+[mime]:string = 'image/jpeg'
+[useParentWidthHeight]:boolean = false
+
+(success) = new EventEmitter()
+(catch):EventEmitter<Error> = new EventEmitter()
+
+[(ref)]:WebCamComponent
+[(error)]:Error
+
+[options]:{
   audio: boolean,
   video: boolean,
   width: number,
@@ -198,11 +211,15 @@ Get listing of users media devices
 ></ack-media-devices>
 ```
 
-## Bindings
+*Bindings*
 ```typescript
-[(array)]:device[] = []
-[(error)]
-(catch) = new EventEmitter()
+[(array)]:MediaDeviceInfo[] = []
+[(error)]:Error
+[(videoInputs)]:MediaDeviceInfo[]
+[(audioInputs)]:MediaDeviceInfo[]
+[(audioOutputs)]:MediaDeviceInfo[]
+
+(catch):EventEmitter<Error> = new EventEmitter()
 ```
 
 
