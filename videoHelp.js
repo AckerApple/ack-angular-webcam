@@ -9,6 +9,13 @@ function getMedia() {
         || exports.browser.msGetUserMedia;
 }
 exports.getMedia = getMedia;
+/*
+export interface MediaDevice{
+  deviceId: string
+  kind: "videoinput" | "audioinput" | string
+  label: string
+  groupId: string
+}*/
 function dataUriToBlob(dataURI) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;
@@ -143,4 +150,29 @@ var Fallback = (function () {
     return Fallback;
 }());
 exports.Fallback = Fallback;
+function videoInputsByDevices(devices) {
+    return devicesByKind(devices, 'videoinput');
+}
+exports.videoInputsByDevices = videoInputsByDevices;
+function audioInputsByDevices(devices) {
+    return devicesByKind(devices, 'audioinput');
+}
+exports.audioInputsByDevices = audioInputsByDevices;
+function audioOutputsByDevices(devices) {
+    return devicesByKind(devices, 'audiooutput');
+}
+exports.audioOutputsByDevices = audioOutputsByDevices;
+function devicesByKind(devices, kind) {
+    return devices.filter(function (device) { return device.kind === kind; });
+}
+exports.devicesByKind = devicesByKind;
+function promiseDeviceById(id) {
+    return promiseDevices().then(function (devices) { return devices.find(function (device) { return device.deviceId == id; }); });
+}
+exports.promiseDeviceById = promiseDeviceById;
+function promiseDevices() {
+    //const x:Promise<MediaDeviceInfo[]> = browser.mediaDevices.enumerateDevices().then( devices=>devices )
+    return exports.browser.mediaDevices.enumerateDevices();
+}
+exports.promiseDevices = promiseDevices;
 //# sourceMappingURL=videoHelp.js.map

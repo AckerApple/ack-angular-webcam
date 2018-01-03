@@ -1,33 +1,26 @@
 import { ElementRef, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Options, Fallback } from "./videoHelp";
-/**
- * https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
- */
-export interface MediaDevice {
-    deviceId: string;
-    kind: string;
-    label: string;
+export interface vidElmOptions {
+    audio: boolean | MediaDeviceInfo;
+    video: boolean | MediaDeviceInfo;
 }
-/**
- * Render WebCam Component
- */
 export declare class WebCamComponent {
     private sanitizer;
     private element;
     flashPlayer: Fallback;
-    videoSrc: any;
     isSupportUserMedia: boolean;
     isSupportWebRTC: boolean;
     isFallback: boolean;
-    browser: any;
     observer: MutationObserver;
-    onResize: any;
-    stream: any;
+    onResize: () => any;
+    stream: MediaStream;
+    videoDevice: MediaDeviceInfo;
+    videoDeviceId: string;
     mime: string;
     useParentWidthHeight: boolean;
-    ref: any;
-    refChange: EventEmitter<{}>;
+    ref: WebCamComponent;
+    refChange: EventEmitter<WebCamComponent>;
     options: Options;
     success: EventEmitter<{}>;
     error: Error;
@@ -40,28 +33,21 @@ export declare class WebCamComponent {
     applyStream(stream: any): void;
     createVideoResizer(): void;
     applyDefaults(): void;
-    /**
-     * Switch to facing mode and setup web camera
-     * @returns {void}
-     */
-    onWebRTC(): any;
-    resizeVideo(): void;
+    onWebRTC(): Promise<MediaStream>;
+    resizeVideo(maxAttempts?: number): void;
     getVideoDimensions(video: any): {
         width: number;
         height: number;
     };
     getVideoElm(): any;
-    /**
-     * Setup web camera using native browser API
-     * @returns {void}
-     */
-    setWebcam(): any;
+    setWebcam(): Promise<MediaStream>;
+    promiseStreamByVidOptions(optionObject: vidElmOptions): Promise<MediaStream>;
     processSuccess(stream?: any): void;
     /**
      * Start capturing video stream
      * @returns {void}
      */
-    startCapturingVideo(): any;
+    startCapturingVideo(): Promise<any>;
     ngOnDestroy(): void;
     getCanvas(): HTMLCanvasElement;
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
@@ -69,9 +55,6 @@ export declare class WebCamComponent {
     setCanvasWidth(canvas?: any, video?: any): void;
     /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
     createVidElmOb(): HTMLObjectElement;
-    /**
-     * Implement fallback external interface
-     */
     setupFallback(): void;
     /** single image to FormData */
     captureAsFormData(options?: {

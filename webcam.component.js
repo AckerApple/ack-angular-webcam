@@ -4,9 +4,6 @@ var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp_1 = require("./videoHelp");
 var template = "<video id=\"video\" *ngIf=\"(isSupportUserMedia||isSupportWebRTC)\" autoplay=\"\" playsinline=\"\">Video stream not available</video>";
-/**
- * Render WebCam Component
- */
 var WebCamComponent = (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
@@ -14,6 +11,7 @@ var WebCamComponent = (function () {
         this.isSupportUserMedia = false;
         this.isSupportWebRTC = false;
         this.isFallback = false;
+        //@Input() audioDeviceId:string
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
         this.refChange = new core_1.EventEmitter();
@@ -25,9 +23,6 @@ var WebCamComponent = (function () {
         this.isSupportUserMedia = videoHelp_1.getMedia() != null ? true : false;
         this.isSupportUserMedia = false;
         this.isSupportWebRTC = !!(videoHelp_1.browser.mediaDevices && videoHelp_1.browser.mediaDevices.getUserMedia);
-        //this.element.nativeElement.style.display='block'
-        //this.element.nativeElement.style.width='100%'
-        //this.element.nativeElement.style.height='100%'
     };
     WebCamComponent.prototype.ngAfterViewInit = function () {
         var _this = this;
@@ -66,8 +61,8 @@ var WebCamComponent = (function () {
         //deprecated. use angular hash template referencing
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
-        this.startCapturingVideo();
-        this.onResize();
+        this.startCapturingVideo()
+            .then(function () { return setTimeout(function () { return _this.resizeVideo(); }, 10); });
     };
     WebCamComponent.prototype.applyStream = function (stream) {
         var videoElm = this.getVideoElm();
@@ -83,7 +78,7 @@ var WebCamComponent = (function () {
             //,subtree: true
         };
         this.observer.observe(this.element.nativeElement, config);
-        this.onResize = function () { this.resizeVideo(); }.bind(this);
+        this.onResize = function () { return _this.resizeVideo(); };
         window.addEventListener('resize', this.onResize);
     };
     WebCamComponent.prototype.applyDefaults = function () {
@@ -97,44 +92,35 @@ var WebCamComponent = (function () {
             this.options.video = true;
         }
     };
-    /**
-     * Switch to facing mode and setup web camera
-     * @returns {void}
-     */
-    /**
-       * Switch to facing mode and setup web camera
-       * @returns {void}
-       */
-    WebCamComponent.prototype.onWebRTC = /**
-       * Switch to facing mode and setup web camera
-       * @returns {void}
-       */
-    function () {
+    WebCamComponent.prototype.onWebRTC = function () {
         var _this = this;
-        // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices
-        if (videoHelp_1.browser.mediaDevices.enumerateDevices && this.options.video) {
+        var promise = Promise.resolve(null);
+        if (this.videoDeviceId) {
+            promise = videoHelp_1.promiseDeviceById(this.videoDeviceId).then(function (device) { return _this.videoDevice = device; });
+        }
+        else if (videoHelp_1.browser.mediaDevices.enumerateDevices && this.options.video) {
             var cameraType_1 = this.options.cameraType;
-            videoHelp_1.browser.mediaDevices.enumerateDevices().then(function (devices) {
-                devices.forEach(function (device) {
-                    if (device && device.kind === 'videoinput') {
-                        if (device.label.toLowerCase().search(cameraType_1) > -1) {
-                            _this.options.video = { deviceId: { exact: device.deviceId }, facingMode: 'environment' };
-                        }
+            promise = videoHelp_1.promiseDevices()
+                .then(function (devices) {
+                var camDevices = videoHelp_1.videoInputsByDevices(devices);
+                for (var x = camDevices.length - 1; x >= 0; --x) {
+                    if (camDevices[x].label.toLowerCase().search(cameraType_1) > -1) {
+                        return _this.options.video = camDevices[x];
                     }
-                });
-                _this.setWebcam();
+                }
             });
         }
-        else {
-            this.setWebcam();
-        }
+        return promise.then(function () { return _this.setWebcam(); });
     };
-    WebCamComponent.prototype.resizeVideo = function () {
+    WebCamComponent.prototype.resizeVideo = function (maxAttempts) {
+        var _this = this;
+        if (maxAttempts === void 0) { maxAttempts = 4; }
         var video = this.getVideoElm();
         if (!video)
             return;
-        video.width = 0;
-        video.height = 0;
+        video.style.position = 'absolute';
+        //video.width = 0
+        //video.height = 0
         var elm = this.useParentWidthHeight ? this.element.nativeElement.parentNode : this.element.nativeElement;
         var width = this.options.width || parseInt(elm.offsetWidth, 10);
         var height = this.options.height || parseInt(elm.offsetHeight, 10);
@@ -142,8 +128,16 @@ var WebCamComponent = (function () {
             width = 320;
             height = 240;
         }
-        video.width = width;
-        video.height = height;
+        setTimeout(function () {
+            video.width = width;
+            video.height = height;
+            video.style.position = 'static';
+            //now that we set a width and height, it may need another adjustment if it pushed percent based items around
+            var resizeAgain = (!_this.options.width && width != parseInt(elm.offsetWidth, 10)) || (!_this.options.height && height != parseInt(elm.offsetHeight, 10));
+            if (resizeAgain && maxAttempts) {
+                _this.resizeVideo(--maxAttempts);
+            }
+        }, 1);
     };
     WebCamComponent.prototype.getVideoDimensions = function (video) {
         video = video || this.getVideoElm();
@@ -167,59 +161,44 @@ var WebCamComponent = (function () {
         var elmType = this.isFallback ? 'object' : 'video';
         return native.getElementsByTagName(elmType)[0];
     };
-    /**
-     * Setup web camera using native browser API
-     * @returns {void}
-     */
-    /**
-       * Setup web camera using native browser API
-       * @returns {void}
-       */
-    WebCamComponent.prototype.setWebcam = /**
-       * Setup web camera using native browser API
-       * @returns {void}
-       */
-    function () {
+    WebCamComponent.prototype.setWebcam = function () {
         var _this = this;
         // constructing a getUserMedia config-object and
         // an string (we will try both)
         var optionObject = { audio: false, video: false };
-        var optionString = '';
-        if (this.options.video) {
+        if (this.videoDevice) {
+            optionObject.video = this.videoDevice;
+        }
+        else if (this.options.video) {
             optionObject.video = this.options.video;
-            optionString = 'video';
         }
         if (this.options.audio === true) {
             optionObject.audio = true;
-            if (optionString !== '') {
-                optionString = optionString + ', ';
-            }
-            optionString = optionString + 'audio';
         }
         // Promisify async callback's for angular2 change detection
-        var promisifyGetUserMedia = function () {
-            return new Promise(function (resolve, reject) {
-                try {
-                    videoHelp_1.browser.mediaDevices.getUserMedia(optionObject)
-                        .then(function (stream) { return resolve(stream); })
-                        .catch(function (objErr) {
-                        reject(objErr);
-                    });
-                }
-                catch (e) {
-                    reject(e);
-                }
-            });
-        };
-        promisifyGetUserMedia()
+        var promiseStream = this.promiseStreamByVidOptions(optionObject);
+        return promiseStream
             .then(function (stream) {
             _this.applyStream(stream);
             _this.processSuccess(stream);
             _this.stream = stream;
+            return stream;
         }).catch(function (err) {
             _this.errorChange.emit(_this.error = err);
             _this.catcher.emit(err);
             return Promise.reject(err);
+        });
+    };
+    WebCamComponent.prototype.promiseStreamByVidOptions = function (optionObject) {
+        return new Promise(function (resolve, reject) {
+            try {
+                videoHelp_1.browser.mediaDevices.getUserMedia(optionObject)
+                    .then(function (stream) { return resolve(stream); })
+                    .catch(function (objErr) { return reject(objErr); });
+            }
+            catch (e) {
+                reject(e);
+            }
         });
     };
     WebCamComponent.prototype.processSuccess = function (stream) {
@@ -246,7 +225,7 @@ var WebCamComponent = (function () {
         if (!this.isFallback && this.isSupportWebRTC) {
             return this.onWebRTC();
         }
-        return this.processSuccess();
+        return Promise.resolve(this.processSuccess());
     };
     WebCamComponent.prototype.ngOnDestroy = function () {
         this.observer.disconnect();
@@ -257,7 +236,7 @@ var WebCamComponent = (function () {
         }
         if (this.stream) {
             this.stream.getTracks().forEach(function (track) { return track.stop(); });
-            //this.stream.getTracks()[0].stop();
+            //this.stream.getTracks()[0].stop()
         }
     };
     WebCamComponent.prototype.getCanvas = function () {
@@ -312,16 +291,7 @@ var WebCamComponent = (function () {
         this.element.nativeElement.appendChild(rtnElm);
         return rtnElm;
     };
-    /**
-     * Implement fallback external interface
-     */
-    /**
-       * Implement fallback external interface
-       */
-    WebCamComponent.prototype.setupFallback = /**
-       * Implement fallback external interface
-       */
-    function () {
+    WebCamComponent.prototype.setupFallback = function () {
         this.isFallback = true;
         var vidElm = this.getVideoElm() || this.createVidElmOb();
         this.flashPlayer = new videoHelp_1.Fallback(vidElm);
@@ -350,6 +320,8 @@ var WebCamComponent = (function () {
         { type: core_1.ElementRef, },
     ]; };
     WebCamComponent.propDecorators = {
+        "videoDevice": [{ type: core_1.Input },],
+        "videoDeviceId": [{ type: core_1.Input },],
         "mime": [{ type: core_1.Input },],
         "useParentWidthHeight": [{ type: core_1.Input },],
         "ref": [{ type: core_1.Input },],

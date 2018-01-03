@@ -6,7 +6,12 @@ export declare function getMedia(): any;
  */
 export interface Options {
     video: boolean | any;
-    cameraType: string;
+    cameraType: 'front' | string | {
+        deviceId: {
+            exact: string;
+        };
+        facingMode: 'environment' | string;
+    };
     audio: boolean;
     width: number;
     height: number;
@@ -51,3 +56,9 @@ export declare class Fallback {
      */
     addFallbackParams(options: Options): any;
 }
+export declare function videoInputsByDevices(devices: MediaDeviceInfo[]): MediaDeviceInfo[];
+export declare function audioInputsByDevices(devices: MediaDeviceInfo[]): MediaDeviceInfo[];
+export declare function audioOutputsByDevices(devices: MediaDeviceInfo[]): MediaDeviceInfo[];
+export declare function devicesByKind(devices: MediaDeviceInfo[], kind: string): MediaDeviceInfo[];
+export declare function promiseDeviceById(id: string): Promise<MediaDeviceInfo>;
+export declare function promiseDevices(): Promise<MediaDeviceInfo[]>;
