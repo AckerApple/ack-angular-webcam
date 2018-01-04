@@ -223,3 +223,9 @@ export function promiseDevices():Promise<MediaDeviceInfo[]> {
   //const x:Promise<MediaDeviceInfo[]> = browser.mediaDevices.enumerateDevices().then( devices=>devices )
   return browser.mediaDevices.enumerateDevices()
 }
+
+export function isFacingModeSupported():boolean{
+  if(!browser.mediaDevices)return false
+  const contraints = browser.mediaDevices.getSupportedConstraints()
+  return contraints.facingMode
+}

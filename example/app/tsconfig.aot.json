@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "aot",
+    "outDir": "../aot",
     "target": "ES5",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -14,12 +14,14 @@
     "lib": ["es2015", "dom"]
   },
   "exclude": [
-    "node_modules",
-    "../node_modules",
-    "../node_modules/**"
+    "node_modules"
+  ],
+  "include":[
+    "../../package.json",
+    "typings.d.ts"
   ],
   "files": [
-    "index.ts"
+    "./index.ts"
   ],
   "angularCompilerOptions": {
     "skipMetadataEmit" : false,

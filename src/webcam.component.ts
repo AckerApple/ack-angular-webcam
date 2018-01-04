@@ -15,8 +15,8 @@ import {
 const template = `<video id="video" *ngIf="(isSupportUserMedia||isSupportWebRTC)" autoplay="" playsinline="">Video stream not available</video>`
 
 export interface vidElmOptions{
-  audio: boolean | MediaDeviceInfo
-  video: boolean | MediaDeviceInfo
+  audio: boolean | MediaTrackConstraints
+  video: boolean | MediaTrackConstraints
 }
 
 @Component({
@@ -39,6 +39,7 @@ export interface vidElmOptions{
   @Input() videoDeviceId:string
   //@Input() audioDeviceId:string
   
+  @Input() facingMode:"user"|"enviroment"|"left"|"right"|string
   @Input() mime = 'image/jpeg'
   @Input() useParentWidthHeight:boolean = false
 
@@ -126,7 +127,6 @@ export interface vidElmOptions{
     this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf'
     this.options.fallbackMode = this.options.fallbackMode || 'callback'
     this.options.fallbackQuality = this.options.fallbackQuality || 200
-    this.options.cameraType = this.options.cameraType  || 'front'
     this.isFallback = this.options.fallback || (!this.isSupportUserMedia && !this.isSupportWebRTC && this.options.fallbackSrc) ? true : false
 
     if(!this.options.video && !this.options.audio){
@@ -137,23 +137,39 @@ export interface vidElmOptions{
   onWebRTC(): Promise<MediaStream> {
     let promise:Promise<MediaDeviceInfo> = Promise.resolve(null)
 
-    if( this.videoDeviceId ){
-      promise = promiseDeviceById( this.videoDeviceId ).then( device=>this.videoDevice=device )
-    }else if (browser.mediaDevices.enumerateDevices && this.options.video) {
-      const cameraType = <string>this.options.cameraType
+    return this.promiseVideoOptions()
+    .then( options=>{
+      this.options.video = options
+      return this.setWebcam(this.options)
+    })
+  }
+
+  promiseVideoOptions():Promise<MediaTrackConstraints>{
+    let promise = Promise.resolve()
+    const videoOptions:MediaTrackConstraints = {}
+
+    if( this.facingMode ){
+      videoOptions.facingMode = this.facingMode//{exact:this.facingMode}
+    }else{
+      videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId
+    }
+
+
+    if( this.options.cameraType && this.options.cameraType.constructor==String ){
       promise = promiseDevices()
-      .then(devices=> {
+      .then(devices=>{
         const camDevices = videoInputsByDevices(devices)
-        
+        //old deprecated way of handling device selecting
+        const cameraType = <string>this.options.cameraType
         for(let x=camDevices.length-1; x >= 0; --x){
           if(camDevices[x].label.toLowerCase().search(cameraType) > -1){
-            return this.options.video = camDevices[x]
+            videoOptions.deviceId = camDevices[x].deviceId
           }
         }
       })
     }
 
-    return promise.then( ()=>this.setWebcam() )
+    return promise.then( ()=>videoOptions )
   }
 
   resizeVideo(maxAttempts=4){
@@ -213,25 +229,8 @@ export interface vidElmOptions{
     return native.getElementsByTagName(elmType)[0]
   }
 
-  setWebcam(): Promise<MediaStream> {
-    // constructing a getUserMedia config-object and
-    // an string (we will try both)
-    let optionObject:vidElmOptions = { audio: false, video: false }
-
-    if( this.videoDevice ){
-      optionObject.video = this.videoDevice
-    }else if( this.options.video ) {
-      optionObject.video = this.options.video
-    }
-
-    if (this.options.audio === true) {
-      optionObject.audio = true
-    }
-
-    // Promisify async callback's for angular2 change detection
-    const promiseStream = this.promiseStreamByVidOptions(optionObject)
-
-    return promiseStream
+  setWebcam(options:Options): Promise<MediaStream> {
+    return this.promiseStreamByVidOptions(options)
     .then(stream=>{
       this.applyStream(stream)
       this.processSuccess(stream)

@@ -1,68 +1,78 @@
-import { Component, ElementRef } from '@angular/core';
-import { WebCamComponent } from './ack-angular-webcam';
+import { Component, ElementRef } from '@angular/core'
+import { WebCamComponent } from './ack-angular-webcam'
+import { isFacingModeSupported } from './ack-angular-webcam/videoHelp'
+import * as pack from "../../package.json"
 
 const template=`
 <!-- devices -->
-<table border=0 cellpadding=0 cellspacing=0 width="100%" height="100%" *ngIf="changeConfig">
-  <tbody *ngIf="!deviceError">
-    <tr>
-      <td colspan="2" style="height:40px;">
-        <div style="font-weight:bold;font-size:1.3em;">
-          {{ devices?.length }} Devices
-        </div>
-        {{ audioOutputs?.length }} Audio Outputs
-      </td>
-    </tr>
-    <tr style="height:40px;">
-      <td valign="bottom">
-        {{ videoDevices?.length }} Video Inputs
-      </td>
-      <td valign="bottom">
-        {{ audioDevices?.length }} Audio Inputs
-      </td>
-    </tr>
-    <tr style="height:40px;">
-      <td>
-        <select style="display:block;width:100%;height:100%" (change)="changeConfig.videoDeviceId=$event.target.value">
-          <ng-container *ngFor="let device of videoDevices">
-            <option [value]="device.deviceId">{{ device.label || device.kind+'('+index+')' }}</option>
-          </ng-container>
-        </select>
-      </td>
-      <td>
-        <select style="display:block;width:100%;height:100%">
-          <ng-container *ngFor="let device of audioDevices;let index=index">
-            <option [value]="device.deviceId">{{ device.label || device.kind+'('+index+')' }}</option>
-          </ng-container>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;min-height:200px;">{{ devices | json }}</textarea>
-      </td>
-    </tr>
-  </tbody>
-  <tfoot>
-    <tr *ngIf="deviceError">
-      <td colspan="2">
-        <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ deviceError | json }}</textarea>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" style="height:60px">
-        <ack-media-devices
-          [(array)]        = "devices"
-          [(videoInputs)]  = "videoDevices"
-          [(audioInputs)]  = "audioDevices"
-          [(audioOutputs)] = "audioOutputs"
-          [(error)]        = "deviceError"
-        ></ack-media-devices>
-        <button (click)="changeConfig=null" style="padding:1em;font-size:1.2em;width:100%">close</button>
-      </td>
-    </tr>
-  </tfoot>
-</table>
+<div style="position:absolute;right:5px;color:#999999;">v{{ version || '0.0.0' }}</div>
+<ng-container *ngIf="changeConfig">
+  <ack-media-devices
+    [(array)]        = "devices"
+    [(videoInputs)]  = "videoDevices"
+    [(audioInputs)]  = "audioDevices"
+    [(audioOutputs)] = "audioOutputs"
+    [(error)]        = "deviceError"
+  ></ack-media-devices>
+  <table border=0 cellpadding=0 cellspacing=0 width="100%" height="100%">
+    <tbody *ngIf="!deviceError">
+      <tr>
+        <td colspan="3" style="height:40px;">
+          <div style="font-weight:bold;font-size:1.3em;">
+            {{ devices?.length }} Devices
+          </div>
+          {{ audioOutputs?.length }} Audio Outputs
+        </td>
+      </tr>
+      <tr style="height:40px;">
+        <td valign="bottom">
+          {{ videoDevices?.length }} Video Inputs
+        </td>
+        <td valign="bottom">
+          {{ audioDevices?.length }} Audio Inputs
+        </td>
+        <td>Facing Mode {{ isFacingModeSupported ? 'IS' : 'NOT' }} Supported</td>
+      </tr>
+      <tr style="height:40px;">
+        <td>
+          <select style="display:block;width:100%;height:100%" (change)="changeConfig.videoDeviceId=$event.target.value">
+              <option>default</option>
+              <option *ngFor="let device of videoDevices;let index=index" [value]="device.deviceId" [selected]="changeConfig.videoDeviceId==device.deviceId">{{ device.label || device.kind+'('+index+')' }}</option>
+          </select>
+        </td>
+        <td>
+          <select style="display:block;width:100%;height:100%" (change)="changeConfig.audioDeviceId=$event.target.value">
+            <option>default</option>
+            <option *ngFor="let device of audioDevices;let index=index" [value]="device.deviceId" [selected]="changeConfig.audioDeviceId==device.deviceId">{{ device.label || device.kind+'('+index+')' }}</option>
+          </select>
+        </td>
+        <td>
+          <select style="display:block;width:100%;height:100%" (change)="changeConfig.facingMode=$event.target.value">
+            <option>default</option>
+            <option *ngFor="let item of facingModes;let index=index" [value]="item" [selected]="changeConfig.facingMode==item">{{ item }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;min-height:200px;">{{ devices | json }}</textarea>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr *ngIf="deviceError">
+        <td colspan="3">
+          <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ deviceError | json }}</textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="height:60px">
+          <button (click)="changeConfig=null" style="padding:1em;font-size:1.2em;width:100%">close</button>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</ng-container>
 
 <!-- capture -->
 <table border=0 cellpadding=0 cellspacing=0 width="100%" height="100%" *ngIf="!changeConfig && captured">
@@ -101,6 +111,7 @@ const template=`
         <ack-webcam
           [(ref)]         = "cameras[index].webcam"
           [videoDeviceId] = "cameras[index].videoDeviceId"
+          [facingMode]    = "cameras[index].facingMode"
           [(error)]       = "cameras[index].error"
           [options]       = "options"
           (success)       = "onSuccess($event)"
@@ -132,7 +143,10 @@ const template=`
   selector: 'app-component',
   template:template
 }) export class AppComponent {
+  isFacingModeSupported = isFacingModeSupported()
+  version = pack["version"]
   cameras:any[] = [{}]
+  facingModes = ["user","enviroment","left","right"]
   changeConfig:string
   captured:any = false
 

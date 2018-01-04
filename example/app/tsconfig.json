@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "../www",
     "target": "ES5",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
-    "inlineSources": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": ".",
     "experimentalDecorators": true,
     "noEmitHelpers": false,
     "allowJs": true,
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
-    "lib": ["es2015", "dom"],
-    "outDir": "www"
-  }
+    "lib": ["es2015", "dom"]
+  },
+  "files": [
+    "./index.ts"
+  ],
+  "include":[
+    "../../package.json",
+    "typings.d.ts"
+  ]
 }
