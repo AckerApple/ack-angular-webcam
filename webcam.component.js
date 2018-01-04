@@ -11,7 +11,6 @@ var WebCamComponent = (function () {
         this.isSupportUserMedia = false;
         this.isSupportWebRTC = false;
         this.isFallback = false;
-        //@Input() audioDeviceId:string
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
         this.refChange = new core_1.EventEmitter();
@@ -86,7 +85,6 @@ var WebCamComponent = (function () {
         this.options.fallbackSrc = this.options.fallbackSrc || 'jscam_canvas_only.swf';
         this.options.fallbackMode = this.options.fallbackMode || 'callback';
         this.options.fallbackQuality = this.options.fallbackQuality || 200;
-        this.options.cameraType = this.options.cameraType || 'front';
         this.isFallback = this.options.fallback || (!this.isSupportUserMedia && !this.isSupportWebRTC && this.options.fallbackSrc) ? true : false;
         if (!this.options.video && !this.options.audio) {
             this.options.video = true;
@@ -95,22 +93,36 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.onWebRTC = function () {
         var _this = this;
         var promise = Promise.resolve(null);
-        if (this.videoDeviceId) {
-            promise = videoHelp_1.promiseDeviceById(this.videoDeviceId).then(function (device) { return _this.videoDevice = device; });
+        return this.promiseVideoOptions()
+            .then(function (options) {
+            _this.options.video = options;
+            return _this.setWebcam(_this.options);
+        });
+    };
+    WebCamComponent.prototype.promiseVideoOptions = function () {
+        var _this = this;
+        var promise = Promise.resolve();
+        var videoOptions = {};
+        if (this.facingMode) {
+            videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
         }
-        else if (videoHelp_1.browser.mediaDevices.enumerateDevices && this.options.video) {
-            var cameraType_1 = this.options.cameraType;
+        else {
+            videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId;
+        }
+        if (this.options.cameraType && this.options.cameraType.constructor == String) {
             promise = videoHelp_1.promiseDevices()
                 .then(function (devices) {
                 var camDevices = videoHelp_1.videoInputsByDevices(devices);
+                //old deprecated way of handling device selecting
+                var cameraType = _this.options.cameraType;
                 for (var x = camDevices.length - 1; x >= 0; --x) {
-                    if (camDevices[x].label.toLowerCase().search(cameraType_1) > -1) {
-                        return _this.options.video = camDevices[x];
+                    if (camDevices[x].label.toLowerCase().search(cameraType) > -1) {
+                        videoOptions.deviceId = camDevices[x].deviceId;
                     }
                 }
             });
         }
-        return promise.then(function () { return _this.setWebcam(); });
+        return promise.then(function () { return videoOptions; });
     };
     WebCamComponent.prototype.resizeVideo = function (maxAttempts) {
         var _this = this;
@@ -161,23 +173,9 @@ var WebCamComponent = (function () {
         var elmType = this.isFallback ? 'object' : 'video';
         return native.getElementsByTagName(elmType)[0];
     };
-    WebCamComponent.prototype.setWebcam = function () {
+    WebCamComponent.prototype.setWebcam = function (options) {
         var _this = this;
-        // constructing a getUserMedia config-object and
-        // an string (we will try both)
-        var optionObject = { audio: false, video: false };
-        if (this.videoDevice) {
-            optionObject.video = this.videoDevice;
-        }
-        else if (this.options.video) {
-            optionObject.video = this.options.video;
-        }
-        if (this.options.audio === true) {
-            optionObject.audio = true;
-        }
-        // Promisify async callback's for angular2 change detection
-        var promiseStream = this.promiseStreamByVidOptions(optionObject);
-        return promiseStream
+        return this.promiseStreamByVidOptions(options)
             .then(function (stream) {
             _this.applyStream(stream);
             _this.processSuccess(stream);
@@ -322,6 +320,7 @@ var WebCamComponent = (function () {
     WebCamComponent.propDecorators = {
         "videoDevice": [{ type: core_1.Input },],
         "videoDeviceId": [{ type: core_1.Input },],
+        "facingMode": [{ type: core_1.Input },],
         "mime": [{ type: core_1.Input },],
         "useParentWidthHeight": [{ type: core_1.Input },],
         "ref": [{ type: core_1.Input },],

@@ -175,4 +175,11 @@ function promiseDevices() {
     return exports.browser.mediaDevices.enumerateDevices();
 }
 exports.promiseDevices = promiseDevices;
+function isFacingModeSupported() {
+    if (!exports.browser.mediaDevices)
+        return false;
+    var contraints = exports.browser.mediaDevices.getSupportedConstraints();
+    return contraints.facingMode;
+}
+exports.isFacingModeSupported = isFacingModeSupported;
 //# sourceMappingURL=videoHelp.js.map

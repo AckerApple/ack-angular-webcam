@@ -2,8 +2,8 @@ import { ElementRef, EventEmitter } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Options, Fallback } from "./videoHelp";
 export interface vidElmOptions {
-    audio: boolean | MediaDeviceInfo;
-    video: boolean | MediaDeviceInfo;
+    audio: boolean | MediaTrackConstraints;
+    video: boolean | MediaTrackConstraints;
 }
 export declare class WebCamComponent {
     private sanitizer;
@@ -17,6 +17,7 @@ export declare class WebCamComponent {
     stream: MediaStream;
     videoDevice: MediaDeviceInfo;
     videoDeviceId: string;
+    facingMode: "user" | "enviroment" | "left" | "right" | string;
     mime: string;
     useParentWidthHeight: boolean;
     ref: WebCamComponent;
@@ -34,13 +35,14 @@ export declare class WebCamComponent {
     createVideoResizer(): void;
     applyDefaults(): void;
     onWebRTC(): Promise<MediaStream>;
+    promiseVideoOptions(): Promise<MediaTrackConstraints>;
     resizeVideo(maxAttempts?: number): void;
     getVideoDimensions(video: any): {
         width: number;
         height: number;
     };
     getVideoElm(): any;
-    setWebcam(): Promise<MediaStream>;
+    setWebcam(options: Options): Promise<MediaStream>;
     promiseStreamByVidOptions(optionObject: vidElmOptions): Promise<MediaStream>;
     processSuccess(stream?: any): void;
     /**

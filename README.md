@@ -135,27 +135,28 @@ const template = `
 ack-angular-webcam inputs and outputs
 
 ```typescript
-[videoDevice]:MediaDeviceInfo
-[videoDeviceId]:string
-[audioDeviceId]:string
-[mime]:string = 'image/jpeg'
+[videoDevice] : MediaDeviceInfo
+[videoDeviceId] : string
+[audioDeviceId] : string
+[mime] : string = 'image/jpeg'
 [useParentWidthHeight]:boolean = false
+[facingMode] : "user"|"enviroment"|"left"|"right"|string
 
 (success) = new EventEmitter()
-(catch):EventEmitter<Error> = new EventEmitter()
+(catch) : EventEmitter<Error> = new EventEmitter()
 
 [(ref)]:WebCamComponent
 [(error)]:Error
 
 [options]:{
-  audio: boolean,
-  video: boolean,
-  width: number,
-  height: number,
-  fallbackMode: 'callback',
-  fallbackSrc: 'jscam_canvas_only.swf',
-  fallbackQuality: 85,
-  cameraType: 'front' || 'back'
+  audio : boolean,
+  video : boolean,
+  width : number,
+  height : number,
+  fallbackMode : 'callback',
+  fallbackSrc : 'jscam_canvas_only.swf',
+  fallbackQuality : 85,
+  cameraType : 'front' || 'back'//DEPRECATED
 }
 ```
 
@@ -211,7 +212,7 @@ Get listing of users media devices
 ></ack-media-devices>
 ```
 
-*Bindings*
+**Bindings**
 ```typescript
 [(array)]:MediaDeviceInfo[] = []
 [(error)]:Error

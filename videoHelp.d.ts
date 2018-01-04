@@ -62,3 +62,4 @@ export declare function audioOutputsByDevices(devices: MediaDeviceInfo[]): Media
 export declare function devicesByKind(devices: MediaDeviceInfo[], kind: string): MediaDeviceInfo[];
 export declare function promiseDeviceById(id: string): Promise<MediaDeviceInfo>;
 export declare function promiseDevices(): Promise<MediaDeviceInfo[]>;
+export declare function isFacingModeSupported(): boolean;
