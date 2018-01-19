@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.7.2] - 2018-01-19
+- Catch getUserMedia()
+
 ## [1.7.1] - 2018-01-04
 - Added better facingMode handling
 

@@ -62,7 +62,7 @@ const template=`
     <tfoot>
       <tr *ngIf="deviceError">
         <td colspan="3">
-          <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ deviceError | json }}</textarea>
+          <textarea readonly style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ deviceError.name+'\r\r' }}{{ deviceError.message+'\r\r' }}{{ deviceError | json }}</textarea>
         </td>
       </tr>
       <tr>
@@ -103,7 +103,7 @@ const template=`
   <ng-container *ngFor="let camConfig of cameras; let index=index">
     <tr *ngIf="cameras[index].error">
       <td colspan="2">
-        <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ cameras[index].error | json }}</textarea>
+        <textarea style="padding:.5em;font-size:1em;width:100%;height:100%;color:red;">{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ cameras[index].error | json }}</textarea>
       </td>
     </tr>
     <tr *ngIf="!cameras[index].error">

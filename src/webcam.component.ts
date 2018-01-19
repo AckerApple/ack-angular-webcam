@@ -81,7 +81,8 @@ export interface vidElmOptions{
     // Some browsers partially implement mediaDevices. We can't just assign an object
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
-    if ((browser.mediaDevices && browser.mediaDevices.getUserMedia === undefined) && !!media) {
+    const getUserMediaUndefined = (browser.mediaDevices && browser.mediaDevices.getUserMedia === undefined) && !!media
+    if( getUserMediaUndefined ){
       browser.mediaDevices.getUserMedia = constraints=>{
         return new Promise((resolve, reject)=>{
           const userMedia = media.call(browser, constraints, resolve, reject)
@@ -90,6 +91,7 @@ export interface vidElmOptions{
             userMedia.then( stream=>this.applyStream(stream) )
           }
         })
+        .catch( err=>this.catchError(err) )
       }
     }
 
@@ -100,6 +102,7 @@ export interface vidElmOptions{
     
     this.startCapturingVideo()
     .then( ()=>setTimeout(()=>this.resizeVideo(), 10) )
+    .catch( err=>this.catchError(err) )
   }
 
   applyStream(stream){
@@ -236,11 +239,14 @@ export interface vidElmOptions{
       this.processSuccess(stream)
       this.stream = stream
       return stream
-    }).catch(err=>{
-      this.errorChange.emit(this.error=err)
-      this.catcher.emit(err)
-      return Promise.reject(err)
     })
+    .catch( err=>this.catchError(err) )
+  }
+
+  catchError(err:Error):Promise<any>{
+    this.errorChange.emit(this.error=err)
+    this.catcher.emit(err)
+    return Promise.reject(err)
   }
 
   promiseStreamByVidOptions(optionObject:vidElmOptions):Promise<MediaStream>{
