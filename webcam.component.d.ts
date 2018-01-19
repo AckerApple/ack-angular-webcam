@@ -43,6 +43,7 @@ export declare class WebCamComponent {
     };
     getVideoElm(): any;
     setWebcam(options: Options): Promise<MediaStream>;
+    catchError(err: Error): Promise<any>;
     promiseStreamByVidOptions(optionObject: vidElmOptions): Promise<MediaStream>;
     processSuccess(stream?: any): void;
     /**

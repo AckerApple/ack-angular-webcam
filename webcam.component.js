@@ -47,21 +47,24 @@ var WebCamComponent = (function () {
         // Some browsers partially implement mediaDevices. We can't just assign an object
         // with getUserMedia as it would overwrite existing properties.
         // Here, we will just add the getUserMedia property if it's missing.
-        if ((videoHelp_1.browser.mediaDevices && videoHelp_1.browser.mediaDevices.getUserMedia === undefined) && !!media) {
+        var getUserMediaUndefined = (videoHelp_1.browser.mediaDevices && videoHelp_1.browser.mediaDevices.getUserMedia === undefined) && !!media;
+        if (getUserMediaUndefined) {
             videoHelp_1.browser.mediaDevices.getUserMedia = function (constraints) {
                 return new Promise(function (resolve, reject) {
                     var userMedia = media.call(videoHelp_1.browser, constraints, resolve, reject);
                     if (userMedia.then) {
                         userMedia.then(function (stream) { return _this.applyStream(stream); });
                     }
-                });
+                })
+                    .catch(function (err) { return _this.catchError(err); });
             };
         }
         //deprecated. use angular hash template referencing
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
         this.startCapturingVideo()
-            .then(function () { return setTimeout(function () { return _this.resizeVideo(); }, 10); });
+            .then(function () { return setTimeout(function () { return _this.resizeVideo(); }, 10); })
+            .catch(function (err) { return _this.catchError(err); });
     };
     WebCamComponent.prototype.applyStream = function (stream) {
         var videoElm = this.getVideoElm();
@@ -181,11 +184,13 @@ var WebCamComponent = (function () {
             _this.processSuccess(stream);
             _this.stream = stream;
             return stream;
-        }).catch(function (err) {
-            _this.errorChange.emit(_this.error = err);
-            _this.catcher.emit(err);
-            return Promise.reject(err);
-        });
+        })
+            .catch(function (err) { return _this.catchError(err); });
+    };
+    WebCamComponent.prototype.catchError = function (err) {
+        this.errorChange.emit(this.error = err);
+        this.catcher.emit(err);
+        return Promise.reject(err);
     };
     WebCamComponent.prototype.promiseStreamByVidOptions = function (optionObject) {
         return new Promise(function (resolve, reject) {
