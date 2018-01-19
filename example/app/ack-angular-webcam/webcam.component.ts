@@ -246,7 +246,10 @@ export interface vidElmOptions{
   catchError(err:Error):Promise<any>{
     this.errorChange.emit(this.error=err)
     this.catcher.emit(err)
-    return Promise.reject(err)
+
+    if( !this.errorChange.observers.length && !this.catcher.observers.length ){
+      return Promise.reject(err)//if no error subscriptions promise need to continue to be Uncaught
+    }
   }
 
   promiseStreamByVidOptions(optionObject:vidElmOptions):Promise<MediaStream>{
