@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.7.5] - 2018-01-26
+- Added [reflect]:boolean
+
 ## [1.7.3] - 2018-01-19
 - Catch getUserMedia()
 

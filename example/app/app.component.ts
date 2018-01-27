@@ -112,6 +112,7 @@ const template=`
           [(ref)]         = "cameras[index].webcam"
           [videoDeviceId] = "cameras[index].videoDeviceId"
           [facingMode]    = "cameras[index].facingMode"
+          [reflect]       = "cameras[index].reflect"
           [(error)]       = "cameras[index].error"
           [options]       = "options"
           (success)       = "onSuccess($event)"
@@ -120,14 +121,15 @@ const template=`
       </td>
     </tr>
     <tr style="height:60px">
-      <td>
-        <button *ngIf="cameras[index].webcam" (click)="captureBase64(cameras[index].webcam)" style="padding:1em;font-size:1.2em;width:100%">Capture</button>
+      <td colspan="3" style="text-align:center">
+        <button (click)="cameras[index].reflect=!cameras[index].reflect" style="padding:.5em;font-size:1.1em;">Reflect{{ cameras[index].reflect ? 'ing' : ''}}</button>
+        <button *ngIf="cameras[index].webcam" (click)="captureBase64(cameras[index].webcam)" style="padding:.5em;font-size:1.1em;">Capture</button>
+        <button (click)="cameras.splice(index,1)" style="padding:.5em;font-size:1.1em;">Destroy</button>
+        <button (click)="changeConfig=camConfig" style="padding:.5em;font-size:1.1em;">Devices</button>
       </td>
       <td>
-        <button (click)="cameras.splice(index,1)" style="padding:1em;font-size:1.2em;width:100%">Destroy</button>
       </td>
       <td>
-        <button (click)="changeConfig=camConfig" style="padding:1em;font-size:1.2em;width:100%">Devices</button>
       </td>
     </tr>
   </ng-container>

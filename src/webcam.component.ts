@@ -39,6 +39,7 @@ export interface vidElmOptions{
   @Input() videoDeviceId:string
   //@Input() audioDeviceId:string
   
+  @Input() reflect:boolean
   @Input() facingMode:"user"|"enviroment"|"left"|"right"|string
   @Input() mime = 'image/jpeg'
   @Input() useParentWidthHeight:boolean = false
@@ -66,9 +67,13 @@ export interface vidElmOptions{
     setTimeout(()=>this.afterInitCycles(), 0)
   }
 
-  /*ngOnChanges() {
-    this.onResize()
-  }*/
+  ngOnChanges( changes ) {
+    //this.onResize()
+
+    if( changes.reflect ){
+      this.applyReflect()
+    }
+  }
 
   afterInitCycles(){
     const media = getMedia()
@@ -105,9 +110,22 @@ export interface vidElmOptions{
     .catch( err=>this.catchError(err) )
   }
 
+  applyReflect(){
+    const videoElm = this.getVideoElm()
+
+    if(!videoElm)return
+
+    if( this.reflect ){
+      videoElm.style.transform = "scaleX(-1)"
+    }else{
+      videoElm.style.transform = "scaleX(1)"
+    }
+  }
+
   applyStream(stream){
     const videoElm = this.getVideoElm()
     videoElm.srcObject = stream
+    this.applyReflect()
   }
 
   createVideoResizer(){
@@ -313,7 +331,14 @@ export interface vidElmOptions{
       const canvas = this.getCanvas()
       const video = this.getVideoElm()
       this.setCanvasWidth(canvas, video)
-      canvas.getContext('2d').drawImage(video, 0, 0)
+      const ctx = canvas.getContext('2d')
+
+      if( this.reflect ){
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+
+      ctx.drawImage(video, 0, 0)
       return Promise.resolve( canvas.toDataURL(mime) )
     }
   }
