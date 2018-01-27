@@ -28,16 +28,13 @@ var WebCamComponent = (function () {
         this.applyDefaults();
         setTimeout(function () { return _this.afterInitCycles(); }, 0);
     };
-    /*ngOnChanges() {
-      this.onResize()
-    }*/
-    /*ngOnChanges() {
-        this.onResize()
-      }*/
-    WebCamComponent.prototype.afterInitCycles = /*ngOnChanges() {
-        this.onResize()
-      }*/
-    function () {
+    WebCamComponent.prototype.ngOnChanges = function (changes) {
+        //this.onResize()
+        if (changes.reflect) {
+            this.applyReflect();
+        }
+    };
+    WebCamComponent.prototype.afterInitCycles = function () {
         var _this = this;
         var media = videoHelp_1.getMedia();
         // Older browsers might not implement mediaDevices at all, so we set an empty object first
@@ -66,9 +63,21 @@ var WebCamComponent = (function () {
             .then(function () { return setTimeout(function () { return _this.resizeVideo(); }, 10); })
             .catch(function (err) { return _this.catchError(err); });
     };
+    WebCamComponent.prototype.applyReflect = function () {
+        var videoElm = this.getVideoElm();
+        if (!videoElm)
+            return;
+        if (this.reflect) {
+            videoElm.style.transform = "scaleX(-1)";
+        }
+        else {
+            videoElm.style.transform = "scaleX(1)";
+        }
+    };
     WebCamComponent.prototype.applyStream = function (stream) {
         var videoElm = this.getVideoElm();
         videoElm.srcObject = stream;
+        this.applyReflect();
     };
     WebCamComponent.prototype.createVideoResizer = function () {
         var _this = this;
@@ -190,7 +199,9 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.catchError = function (err) {
         this.errorChange.emit(this.error = err);
         this.catcher.emit(err);
-        return Promise.reject(err);
+        if (!this.errorChange.observers.length && !this.catcher.observers.length) {
+            return Promise.reject(err); //if no error subscriptions promise need to continue to be Uncaught
+        }
     };
     WebCamComponent.prototype.promiseStreamByVidOptions = function (optionObject) {
         return new Promise(function (resolve, reject) {
@@ -257,7 +268,12 @@ var WebCamComponent = (function () {
             var canvas = this.getCanvas();
             var video = this.getVideoElm();
             this.setCanvasWidth(canvas, video);
-            canvas.getContext('2d').drawImage(video, 0, 0);
+            var ctx = canvas.getContext('2d');
+            if (this.reflect) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0);
             return Promise.resolve(canvas.toDataURL(mime));
         }
     };
@@ -325,6 +341,7 @@ var WebCamComponent = (function () {
     WebCamComponent.propDecorators = {
         "videoDevice": [{ type: core_1.Input },],
         "videoDeviceId": [{ type: core_1.Input },],
+        "reflect": [{ type: core_1.Input },],
         "facingMode": [{ type: core_1.Input },],
         "mime": [{ type: core_1.Input },],
         "useParentWidthHeight": [{ type: core_1.Input },],

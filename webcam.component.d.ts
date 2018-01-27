@@ -17,6 +17,7 @@ export declare class WebCamComponent {
     stream: MediaStream;
     videoDevice: MediaDeviceInfo;
     videoDeviceId: string;
+    reflect: boolean;
     facingMode: "user" | "enviroment" | "left" | "right" | string;
     mime: string;
     useParentWidthHeight: boolean;
@@ -30,7 +31,9 @@ export declare class WebCamComponent {
     constructor(sanitizer: DomSanitizer, element: ElementRef);
     ngOnInit(): void;
     ngAfterViewInit(): void;
+    ngOnChanges(changes: any): void;
     afterInitCycles(): void;
+    applyReflect(): void;
     applyStream(stream: any): void;
     createVideoResizer(): void;
     applyDefaults(): void;
