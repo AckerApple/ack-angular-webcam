@@ -21,10 +21,10 @@ export declare class WebCamComponent {
     facingMode: "user" | "enviroment" | "left" | "right" | string;
     mime: string;
     useParentWidthHeight: boolean;
-    ref: WebCamComponent;
-    refChange: EventEmitter<WebCamComponent>;
     options: Options;
     success: EventEmitter<{}>;
+    ref: WebCamComponent;
+    refChange: EventEmitter<WebCamComponent>;
     error: Error;
     errorChange: EventEmitter<Error>;
     catcher: EventEmitter<Error>;
@@ -40,6 +40,7 @@ export declare class WebCamComponent {
     onWebRTC(): Promise<MediaStream>;
     promiseVideoOptions(): Promise<MediaTrackConstraints>;
     resizeVideo(maxAttempts?: number): void;
+    resize(maxAttempts?: number): void;
     getVideoDimensions(video: any): {
         width: number;
         height: number;

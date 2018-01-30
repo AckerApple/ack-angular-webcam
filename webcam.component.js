@@ -13,8 +13,8 @@ var WebCamComponent = (function () {
         this.isFallback = false;
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
-        this.refChange = new core_1.EventEmitter();
         this.success = new core_1.EventEmitter();
+        this.refChange = new core_1.EventEmitter();
         this.errorChange = new core_1.EventEmitter();
         this.catcher = new core_1.EventEmitter();
     }
@@ -60,7 +60,7 @@ var WebCamComponent = (function () {
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
         this.startCapturingVideo()
-            .then(function () { return setTimeout(function () { return _this.resizeVideo(); }, 10); })
+            .then(function () { return setTimeout(function () { return _this.resize(); }, 10); })
             .catch(function (err) { return _this.catchError(err); });
     };
     WebCamComponent.prototype.applyReflect = function () {
@@ -81,7 +81,7 @@ var WebCamComponent = (function () {
     };
     WebCamComponent.prototype.createVideoResizer = function () {
         var _this = this;
-        this.observer = new MutationObserver(function () { return _this.resizeVideo(); });
+        this.observer = new MutationObserver(function () { return _this.resize(); });
         var config = {
             attributes: true,
             childList: true,
@@ -89,7 +89,7 @@ var WebCamComponent = (function () {
             //,subtree: true
         };
         this.observer.observe(this.element.nativeElement, config);
-        this.onResize = function () { return _this.resizeVideo(); };
+        this.onResize = function () { return _this.resize(); };
         window.addEventListener('resize', this.onResize);
     };
     WebCamComponent.prototype.applyDefaults = function () {
@@ -136,7 +136,15 @@ var WebCamComponent = (function () {
         }
         return promise.then(function () { return videoOptions; });
     };
-    WebCamComponent.prototype.resizeVideo = function (maxAttempts) {
+    //old method name (deprecated)
+    //old method name (deprecated)
+    WebCamComponent.prototype.resizeVideo = 
+    //old method name (deprecated)
+    function (maxAttempts) {
+        if (maxAttempts === void 0) { maxAttempts = 4; }
+        return this.resize(maxAttempts);
+    };
+    WebCamComponent.prototype.resize = function (maxAttempts) {
         var _this = this;
         if (maxAttempts === void 0) { maxAttempts = 4; }
         var video = this.getVideoElm();
@@ -159,7 +167,7 @@ var WebCamComponent = (function () {
             //now that we set a width and height, it may need another adjustment if it pushed percent based items around
             var resizeAgain = (!_this.options.width && width != parseInt(elm.offsetWidth, 10)) || (!_this.options.height && height != parseInt(elm.offsetHeight, 10));
             if (resizeAgain && maxAttempts) {
-                _this.resizeVideo(--maxAttempts);
+                _this.resize(--maxAttempts);
             }
         }, 1);
     };
@@ -345,10 +353,10 @@ var WebCamComponent = (function () {
         "facingMode": [{ type: core_1.Input },],
         "mime": [{ type: core_1.Input },],
         "useParentWidthHeight": [{ type: core_1.Input },],
-        "ref": [{ type: core_1.Input },],
-        "refChange": [{ type: core_1.Output },],
         "options": [{ type: core_1.Input },],
         "success": [{ type: core_1.Output },],
+        "ref": [{ type: core_1.Input },],
+        "refChange": [{ type: core_1.Output },],
         "error": [{ type: core_1.Input },],
         "errorChange": [{ type: core_1.Output },],
         "catcher": [{ type: core_1.Output, args: ['catch',] },],
