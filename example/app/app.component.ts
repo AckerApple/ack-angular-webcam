@@ -114,18 +114,24 @@ const template=`
           [facingMode]    = "cameras[index].facingMode"
           [reflect]       = "cameras[index].reflect"
           [(error)]       = "cameras[index].error"
-          [options]       = "options"
+          [options]       = "cameras[index].options"
           (success)       = "onSuccess($event)"
-          style           = "width:100%;height:100%;display:block;"
+          style           = "width:100%;height:100%;display:block;text-align:center;"
         ></ack-webcam>
       </td>
     </tr>
     <tr style="height:60px">
       <td colspan="3" style="text-align:center">
-        <button (click)="cameras[index].reflect=!cameras[index].reflect" style="padding:.5em;font-size:1.1em;">Reflect{{ cameras[index].reflect ? 'ing' : ''}}</button>
+        <div *ngIf="cameras[index].resize">
+          width:<input type="number" (keyup)="cameras[index].options.width=$event.target.value;cameras[index].webcam.resize()" />px
+          &nbsp;&nbsp;x&nbsp;&nbsp;
+          height:<input type="number" (keyup)="cameras[index].options.height=$event.target.value;cameras[index].webcam.resize()" />px
+        </div>
+        <button (click)="cameras[index].reflect=!cameras[index].reflect" style="padding:.5em;font-size:1.1em;" [style.background-color]="cameras[index].reflect ? '#999' : null">Reflect{{ cameras[index].reflect ? 'ing' : ''}}</button>
         <button *ngIf="cameras[index].webcam" (click)="captureBase64(cameras[index].webcam)" style="padding:.5em;font-size:1.1em;">Capture</button>
         <button (click)="cameras.splice(index,1)" style="padding:.5em;font-size:1.1em;">Destroy</button>
         <button (click)="changeConfig=camConfig" style="padding:.5em;font-size:1.1em;">Devices</button>
+        <button (click)="cameras[index].resize=!cameras[index].resize" style="padding:.5em;font-size:1.1em;" [style.background-color]="cameras[index].resize ? '#999' : null">Size</button>
       </td>
       <td>
       </td>
@@ -135,7 +141,7 @@ const template=`
   </ng-container>
   <tr style="height:60px">
     <td colspan="3">
-      <button (click)="cameras.push({})" style="padding:1em;font-size:1.2em;width:100%">Add Device</button>
+      <button (click)="addCamera()" style="padding:1em;font-size:1.2em;width:100%">Add Device</button>
     <td>
   </tr>
 </table>
@@ -147,7 +153,7 @@ const template=`
 }) export class AppComponent {
   isFacingModeSupported = isFacingModeSupported()
   version = pack["version"]
-  cameras:any[] = [{}]
+  cameras:any[] = []
   facingModes = ["user","enviroment","left","right"]
   changeConfig:string
   captured:any = false
@@ -156,12 +162,16 @@ const template=`
   error: any;
   options: any;
 
-  constructor(private element: ElementRef) {
-    this.options = {
+  constructor(private element: ElementRef){
+    this.addCamera()
+  }
+
+  addCamera(){
+    this.cameras.push({options:{
       audio: false,
       video: true,
-      fallbackSrc: 'fallback/jscam_canvas_only.swf'
-    }
+      fallbackSrc: 'fallback/jscam_canvas_only.swf'    
+    }})
   }
 
   onSuccess(stream: any){

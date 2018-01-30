@@ -43,12 +43,13 @@ export interface vidElmOptions{
   @Input() facingMode:"user"|"enviroment"|"left"|"right"|string
   @Input() mime = 'image/jpeg'
   @Input() useParentWidthHeight:boolean = false
-
-  @Input() ref:WebCamComponent
-  @Output() refChange:EventEmitter<WebCamComponent> = new EventEmitter()
   
   @Input() options: Options
   @Output() success = new EventEmitter()
+
+  //-Lazy @ViewChild() variable reference
+  @Input() ref:WebCamComponent
+  @Output() refChange:EventEmitter<WebCamComponent> = new EventEmitter()
   
   @Input() error:Error
   @Output() errorChange:EventEmitter<Error> = new EventEmitter()
@@ -60,6 +61,7 @@ export interface vidElmOptions{
     this.isSupportUserMedia = getMedia()!=null ? true : false
     this.isSupportUserMedia = false
     this.isSupportWebRTC = !!(browser.mediaDevices && browser.mediaDevices.getUserMedia)
+
   }
 
   ngAfterViewInit(){
@@ -106,7 +108,7 @@ export interface vidElmOptions{
     this.createVideoResizer()
     
     this.startCapturingVideo()
-    .then( ()=>setTimeout(()=>this.resizeVideo(), 10) )
+    .then( ()=>setTimeout(()=>this.resize(), 10) )
     .catch( err=>this.catchError(err) )
   }
 
@@ -129,7 +131,7 @@ export interface vidElmOptions{
   }
 
   createVideoResizer(){
-    this.observer = new MutationObserver( ()=>this.resizeVideo() )
+    this.observer = new MutationObserver( ()=>this.resize() )
     
     const config = {
       attributes: true,
@@ -139,7 +141,7 @@ export interface vidElmOptions{
     }
     this.observer.observe(this.element.nativeElement, config)
 
-    this.onResize = ()=>this.resizeVideo()
+    this.onResize = ()=>this.resize()
     window.addEventListener('resize', this.onResize)
   }
 
@@ -193,7 +195,12 @@ export interface vidElmOptions{
     return promise.then( ()=>videoOptions )
   }
 
+  //old method name (deprecated)
   resizeVideo(maxAttempts=4){
+    return this.resize(maxAttempts)
+  }
+
+  resize(maxAttempts=4){
     const video = this.getVideoElm()
     
     if(!video)return
@@ -221,7 +228,7 @@ export interface vidElmOptions{
       const resizeAgain = (!this.options.width && width!=parseInt(elm.offsetWidth, 10)) || (!this.options.height && height!=parseInt(elm.offsetHeight, 10))
   
       if( resizeAgain && maxAttempts){
-        this.resizeVideo( --maxAttempts )
+        this.resize( --maxAttempts )
       }
     }, 1)
   }
