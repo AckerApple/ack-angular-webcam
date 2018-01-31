@@ -20,8 +20,8 @@ export interface Options {
     facingMode: 'environment' | string
   }
   audio: boolean
-  width: number//deprecated
-  height: number//deprecated
+  width: number
+  height: number
   fallback:boolean
   fallbackSrc: string
   fallbackMode: string
