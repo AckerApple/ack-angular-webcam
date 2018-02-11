@@ -3,9 +3,9 @@ A cross-browser Angular component, it will use the browser's native `getUserMedi
 ](https://ackerapple.github.io/ack-angular-webcam/)
 
 [![hire me](https://ackerapple.github.io/resume/assets/images/hire-me-badge.svg)](https://ackerapple.github.io/resume/)
-[![npm version](https://badge.fury.io/js/angular-file.svg)](http://badge.fury.io/js/angular-file)
-[![npm downloads](https://img.shields.io/npm/dm/angular-file.svg)](https://npmjs.org/angular-file)
-[![Dependency Status](https://david-dm.org/ackerapple/angular-file.svg)](https://david-dm.org/ackerapple/angular-file)
+[![npm version](https://badge.fury.io/js/ack-angular-webcam.svg)](http://badge.fury.io/js/ack-angular-webcam)
+[![npm downloads](https://img.shields.io/npm/dm/ack-angular-webcam.svg)](https://npmjs.org/ack-angular-webcam)
+[![Dependency Status](https://david-dm.org/ackerapple/ack-angular-webcam.svg)](https://david-dm.org/ackerapple/ack-angular-webcam)
 
 ### BEWARE
 - HTTPS or localhost required
