@@ -1,7 +1,11 @@
 # ack-angular-webcam
-A cross-browser Angular component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available.
+A cross-browser Angular component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available. [Demo Page Here
+](https://ackerapple.github.io/ack-angular-webcam/)
 
-[Demo Page](https://ackerapple.github.io/ack-angular-webcam/)
+[![hire me](https://ackerapple.github.io/resume/assets/images/hire-me-badge.svg)](https://ackerapple.github.io/resume/)
+[![npm version](https://badge.fury.io/js/angular-file.svg)](http://badge.fury.io/js/angular-file)
+[![npm downloads](https://img.shields.io/npm/dm/angular-file.svg)](https://npmjs.org/angular-file)
+[![Dependency Status](https://david-dm.org/ackerapple/angular-file.svg)](https://david-dm.org/ackerapple/angular-file)
 
 ### BEWARE
 - HTTPS or localhost required
@@ -156,7 +160,7 @@ ack-angular-webcam inputs and outputs
   fallbackMode : 'callback',
   fallbackSrc : 'jscam_canvas_only.swf',
   fallbackQuality : 85,
-  cameraType : 'front' || 'back'//DEPRECATED
+  cameraType : 'front' || 'back'
 }
 ```
 
