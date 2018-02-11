@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.7.7] - 2018-02-11
+- hire me badge
+
 ## [1.7.5] - 2018-01-26
 - Added [reflect]:boolean
 

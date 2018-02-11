@@ -13,7 +13,7 @@ export function getMedia(){
  */
 export interface Options {
   video: boolean | any
-  cameraType: 'front' | string | {
+  cameraType: 'front' | 'back' | string | {
     deviceId: {
       exact: string
     }
