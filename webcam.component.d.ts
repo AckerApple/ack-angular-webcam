@@ -12,13 +12,14 @@ export declare class WebCamComponent {
     isSupportUserMedia: boolean;
     isSupportWebRTC: boolean;
     isFallback: boolean;
+    initComplete: boolean;
     observer: MutationObserver;
     onResize: () => any;
     stream: MediaStream;
     videoDevice: MediaDeviceInfo;
     videoDeviceId: string;
     reflect: boolean;
-    facingMode: "user" | "enviroment" | "left" | "right" | string;
+    facingMode: "user" | "environment" | "left" | "right" | string;
     mime: string;
     useParentWidthHeight: boolean;
     options: Options;

@@ -144,7 +144,7 @@ ack-angular-webcam inputs and outputs
 [audioDeviceId] : string
 [mime] : string = 'image/jpeg'
 [useParentWidthHeight]:boolean = false
-[facingMode] : "user"|"enviroment"|"left"|"right"|string
+[facingMode] : "user"|"environment"|"left"|"right"|string
 
 (success) = new EventEmitter()
 (catch) : EventEmitter<Error> = new EventEmitter()

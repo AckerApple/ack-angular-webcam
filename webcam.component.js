@@ -29,7 +29,11 @@ var WebCamComponent = (function () {
         setTimeout(function () { return _this.afterInitCycles(); }, 0);
     };
     WebCamComponent.prototype.ngOnChanges = function (changes) {
-        //this.onResize()
+        if (!this.initComplete)
+            return;
+        if (changes.facingMode) {
+            this.startCapturingVideo(); //restart
+        }
         if (changes.reflect) {
             this.applyReflect();
         }
@@ -56,7 +60,8 @@ var WebCamComponent = (function () {
                     .catch(function (err) { return _this.catchError(err); });
             };
         }
-        //deprecated. use angular hash template referencing
+        this.initComplete = true;
+        //deprecated. Use angular hash template referencing and @ViewChild
         setTimeout(function () { return _this.refChange.emit(_this); }, 0);
         this.createVideoResizer();
         this.startCapturingVideo()
