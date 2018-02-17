@@ -1,6 +1,11 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.8.0] - 2018-02-17
+- Change facingMode ondemand without requiring developer to redraw
+- Breaking Change
+  - This package had spelled environment incorrectly as "enviroment". Check your code for this misspelling
+
 ## [1.7.7] - 2018-02-11
 - hire me badge
 

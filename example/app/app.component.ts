@@ -99,7 +99,7 @@ const template=`
 </table>
 
 <!-- webcam -->
-<table border=0 cellpadding=0 cellspacing=0 width="100%" height="100%" *ngIf="!changeConfig && !captured">
+<table border=0 cellpadding=0 cellspacing=0 width="100%" height="100%" *ngIf="!captured">
   <ng-container *ngFor="let camConfig of cameras; let index=index">
     <tr *ngIf="cameras[index].error">
       <td colspan="2">
@@ -154,7 +154,7 @@ const template=`
   isFacingModeSupported = isFacingModeSupported()
   version = pack["version"]
   cameras:any[] = []
-  facingModes = ["user","enviroment","left","right"]
+  facingModes = ["user","environment","left","right"]
   changeConfig:string
   captured:any = false
 

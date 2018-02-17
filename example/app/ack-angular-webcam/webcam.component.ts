@@ -31,6 +31,7 @@ export interface vidElmOptions{
     isFallback: boolean = false
   /* end: platform support variables */
   
+  initComplete:boolean
   observer:MutationObserver
   onResize:()=>any
   stream:MediaStream
@@ -40,7 +41,7 @@ export interface vidElmOptions{
   //@Input() audioDeviceId:string
   
   @Input() reflect:boolean
-  @Input() facingMode:"user"|"enviroment"|"left"|"right"|string
+  @Input() facingMode:"user"|"environment"|"left"|"right"|string
   @Input() mime = 'image/jpeg'
   @Input() useParentWidthHeight:boolean = false
   
@@ -70,7 +71,11 @@ export interface vidElmOptions{
   }
 
   ngOnChanges( changes ) {
-    //this.onResize()
+    if( !this.initComplete )return
+
+    if( changes.facingMode ){
+      this.startCapturingVideo()//restart
+    }
 
     if( changes.reflect ){
       this.applyReflect()
@@ -102,7 +107,9 @@ export interface vidElmOptions{
       }
     }
 
-    //deprecated. use angular hash template referencing    
+    this.initComplete = true
+    
+    //deprecated. Use angular hash template referencing and @ViewChild
     setTimeout(()=>this.refChange.emit(this), 0)
 
     this.createVideoResizer()
@@ -176,7 +183,6 @@ export interface vidElmOptions{
     }else{
       videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId
     }
-
 
     if( this.options.cameraType && this.options.cameraType.constructor==String ){
       promise = promiseDevices()
