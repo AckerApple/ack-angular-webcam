@@ -117,7 +117,6 @@ var WebCamComponent = (function () {
         });
     };
     WebCamComponent.prototype.promiseVideoOptions = function () {
-        var _this = this;
         var promise = Promise.resolve();
         var videoOptions = {};
         if (this.facingMode) {
@@ -125,19 +124,6 @@ var WebCamComponent = (function () {
         }
         else {
             videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId;
-        }
-        if (this.options.cameraType && this.options.cameraType.constructor == String) {
-            promise = videoHelp_1.promiseDevices()
-                .then(function (devices) {
-                var camDevices = videoHelp_1.videoInputsByDevices(devices);
-                //old deprecated way of handling device selecting
-                var cameraType = _this.options.cameraType;
-                for (var x = camDevices.length - 1; x >= 0; --x) {
-                    if (camDevices[x].label.toLowerCase().search(cameraType) > -1) {
-                        videoOptions.deviceId = camDevices[x].deviceId;
-                    }
-                }
-            });
         }
         return promise.then(function () { return videoOptions; });
     };
