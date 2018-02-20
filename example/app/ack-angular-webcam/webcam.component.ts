@@ -184,20 +184,6 @@ export interface vidElmOptions{
       videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId
     }
 
-    if( this.options.cameraType && this.options.cameraType.constructor==String ){
-      promise = promiseDevices()
-      .then(devices=>{
-        const camDevices = videoInputsByDevices(devices)
-        //old deprecated way of handling device selecting
-        const cameraType = <string>this.options.cameraType
-        for(let x=camDevices.length-1; x >= 0; --x){
-          if(camDevices[x].label.toLowerCase().search(cameraType) > -1){
-            videoOptions.deviceId = camDevices[x].deviceId
-          }
-        }
-      })
-    }
-
     return promise.then( ()=>videoOptions )
   }
 

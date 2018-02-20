@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.9.0] - 2018-02-19
+- Remove options.cameraType
+
 ## [1.8.0] - 2018-02-17
 - Change facingMode ondemand without requiring developer to redraw
 - Breaking Change

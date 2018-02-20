@@ -160,7 +160,6 @@ ack-angular-webcam inputs and outputs
   fallbackMode : 'callback',
   fallbackSrc : 'jscam_canvas_only.swf',
   fallbackQuality : 85,
-  cameraType : 'front' || 'back'
 }
 ```
 
