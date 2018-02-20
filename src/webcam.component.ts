@@ -39,6 +39,8 @@ export interface vidElmOptions{
   @Input() videoDevice:MediaDeviceInfo
   @Input() videoDeviceId:string
   //@Input() audioDeviceId:string
+  @Input() idealVideoWidth = 640
+  @Input() idealVideoHeight = 480
   
   @Input() reflect:boolean
   @Input() facingMode:"user"|"environment"|"left"|"right"|string
@@ -176,7 +178,7 @@ export interface vidElmOptions{
 
   promiseVideoOptions():Promise<MediaTrackConstraints>{
     let promise = Promise.resolve()
-    const videoOptions:MediaTrackConstraints = {}
+    const videoOptions:MediaTrackConstraints = { width: { ideal: this.idealVideoWidth }, height: { ideal: this.idealVideoHeight } }
 
     if( this.facingMode ){
       videoOptions.facingMode = this.facingMode//{exact:this.facingMode}
