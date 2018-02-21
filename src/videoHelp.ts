@@ -20,6 +20,7 @@ export interface Options {
   fallbackSrc: string
   fallbackMode: string
   fallbackQuality: number
+  videoOptions: MediaTrackConstraints
 }
 
 export interface VideoObject{

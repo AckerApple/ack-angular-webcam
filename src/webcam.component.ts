@@ -178,7 +178,7 @@ export interface vidElmOptions{
 
   promiseVideoOptions():Promise<MediaTrackConstraints>{
     let promise = Promise.resolve()
-    const videoOptions:MediaTrackConstraints = { width: { ideal: this.idealVideoWidth }, height: { ideal: this.idealVideoHeight } }
+    const videoOptions:MediaTrackConstraints = this.options.videoOptions || {}
 
     if( this.facingMode ){
       videoOptions.facingMode = this.facingMode//{exact:this.facingMode}
