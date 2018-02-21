@@ -19,6 +19,15 @@ export interface vidElmOptions{
   video: boolean | MediaTrackConstraints
 }
 
+export interface elementSets{
+  width:number
+  height:number
+}
+
+export interface sets{
+  element:elementSets
+}
+
 @Component({
   selector: 'ack-webcam',
   template: template,
@@ -36,13 +45,13 @@ export interface vidElmOptions{
   onResize:()=>any
   stream:MediaStream
 
+  sets:sets = {element:{width:0,height:0}}
+
   @Input() videoDevice:MediaDeviceInfo
   @Input() videoDeviceId:string
   //@Input() audioDeviceId:string
-  @Input() idealVideoWidth = 640
-  @Input() idealVideoHeight = 480
   
-  @Input() reflect:boolean
+  @Input() reflect:boolean//mirror camera image
   @Input() facingMode:"user"|"environment"|"left"|"right"|string
   @Input() mime = 'image/jpeg'
   @Input() useParentWidthHeight:boolean = false
@@ -75,13 +84,21 @@ export interface vidElmOptions{
   ngOnChanges( changes ) {
     if( !this.initComplete )return
 
-    if( changes.facingMode ){
-      this.startCapturingVideo()//restart
+    if(
+      changes.facingMode
+    || changes.videoDevice
+    || changes.videoDeviceId
+    ){
+      this.redraw()//restart
     }
 
     if( changes.reflect ){
       this.applyReflect()
     }
+  }
+
+  redraw(){
+    this.startCapturingVideo()
   }
 
   afterInitCycles(){
@@ -178,12 +195,21 @@ export interface vidElmOptions{
 
   promiseVideoOptions():Promise<MediaTrackConstraints>{
     let promise = Promise.resolve()
-    const videoOptions:MediaTrackConstraints = this.options.videoOptions || {}
+
+    const videoOptions:MediaTrackConstraints = {}
+    
+    if(this.options.video && typeof(this.options.video)==='object'){
+      Object.assign(videoOptions, this.options.video)
+    }
 
     if( this.facingMode ){
       videoOptions.facingMode = this.facingMode//{exact:this.facingMode}
     }else{
-      videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId
+      if( this.videoDeviceId ){
+        videoOptions.deviceId = this.videoDeviceId
+      }else if( this.videoDevice ){
+        videoOptions.deviceId = this.videoDevice.deviceId
+      }
     }
 
     return promise.then( ()=>videoOptions )
@@ -216,6 +242,10 @@ export interface vidElmOptions{
     setTimeout(()=>{
       video.width = width
       video.height = height
+      
+      this.sets.element.width = width
+      this.sets.element.height = height
+      
       video.style.position='static'
   
       //now that we set a width and height, it may need another adjustment if it pushed percent based items around
@@ -271,7 +301,9 @@ export interface vidElmOptions{
     }
   }
 
-  promiseStreamByVidOptions(optionObject:vidElmOptions):Promise<MediaStream>{
+  promiseStreamByVidOptions(
+    optionObject:vidElmOptions
+  ):Promise<MediaStream>{
     return new Promise((resolve, reject) => {
       try {
         browser.mediaDevices.getUserMedia(optionObject)

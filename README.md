@@ -1,3 +1,4 @@
+
 # ack-angular-webcam
 A cross-browser Angular component, it will use the browser's native `getUserMedia()` implementation, otherwise an optional Flash fallback is available. [Demo Page Here
 ](https://ackerapple.github.io/ack-angular-webcam/)
@@ -139,29 +140,35 @@ const template = `
 ack-angular-webcam inputs and outputs
 
 ```typescript
-[videoDevice] : MediaDeviceInfo
-[videoDeviceId] : string
-[audioDeviceId] : string
-[mime] : string = 'image/jpeg'
-[useParentWidthHeight]:boolean = false
-[facingMode] : "user"|"environment"|"left"|"right"|string
+[videoDevice]          : MediaDeviceInfo
+[videoDeviceId]        : string
+[audioDeviceId]        : string
+[mime]                 : string = 'image/jpeg'
+[useParentWidthHeight] : boolean = false
+[facingMode]           : "user"|"environment"|"left"|"right"|string
+[reflect]:boolean      //mirror camera image
 
 (success) = new EventEmitter()
 (catch) : EventEmitter<Error> = new EventEmitter()
 
-[(ref)]:WebCamComponent
-[(error)]:Error
+[(ref)]   : WebCamComponent
+[(error)] : Error
 
 [options]:{
-  audio : boolean,
-  video : boolean,
-  width : number,
-  height : number,
-  fallbackMode : 'callback',
-  fallbackSrc : 'jscam_canvas_only.swf',
-  fallbackQuality : 85,
+  video    : boolean | MediaTrackConstraints
+  audio    : boolean
+  width    : number
+  height   : number
+  fallback : boolean
+  fallbackSrc: string
+  fallbackMode: string
+  fallbackQuality: number
 }
 ```
+
+> Binding Resource Links
+>> - [MediaDeviceInfo](https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo)
+>> - [MediaTrackConstraints](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints)
 
 Tested for tablet (Android 4.4.2 GT-N5110) and phone (Android 4.1.2 GT-I8268)
 

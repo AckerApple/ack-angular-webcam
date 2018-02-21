@@ -12,7 +12,7 @@ export function getMedia(){
  * Component options structure interface
  */
 export interface Options {
-  video: boolean | any
+  video: boolean | MediaTrackConstraints
   audio: boolean
   width: number
   height: number
@@ -20,7 +20,6 @@ export interface Options {
   fallbackSrc: string
   fallbackMode: string
   fallbackQuality: number
-  videoOptions: MediaTrackConstraints
 }
 
 export interface VideoObject{
@@ -152,7 +151,6 @@ export class Fallback{
 
 
   captureToCanvas():Promise<Canvas>{
-    console.log('333', this.videoObject)
     return new Promise((res,rej)=>{
       const subscription = this.onImage.subscribe(img=>{
         res(img)

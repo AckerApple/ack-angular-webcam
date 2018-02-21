@@ -1,6 +1,6 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { WebCamModule } from './ack-angular-webcam/index';
+import { WebCamModule } from '../../src/index';
 import { AppComponent } from './app.component';
 
 @NgModule({

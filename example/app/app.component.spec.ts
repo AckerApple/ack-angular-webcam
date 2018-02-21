@@ -1,6 +1,6 @@
 import { TestBed, async } from '@angular/core/testing';
-import AppComponent from './app.component';
-import { WebCamComponent } from './ack-angular-webcam/index';
+import { AppComponent } from './app.component';
+import { WebCamComponent } from '../../src/index';
 
 describe('App Component', () => {
   beforeEach(async(() => {

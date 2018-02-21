@@ -1,6 +1,10 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.9.1] - 2018-02-21
+- Data typed options.video boolean | MediaTrackConstraints
+- Fixed ngOnChanges bind with videoDevice videoDeviceId
+
 ## [1.9.0] - 2018-02-19
 - Remove options.cameraType
 
