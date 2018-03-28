@@ -102,7 +102,6 @@ var Fallback = (function () {
     }
     Fallback.prototype.captureToCanvas = function () {
         var _this = this;
-        console.log('333', this.videoObject);
         return new Promise(function (res, rej) {
             var subscription = _this.onImage.subscribe(function (img) {
                 res(img);

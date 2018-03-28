@@ -11,6 +11,7 @@ var WebCamComponent = (function () {
         this.isSupportUserMedia = false;
         this.isSupportWebRTC = false;
         this.isFallback = false;
+        this.sets = { element: { width: 0, height: 0 } };
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
         this.success = new core_1.EventEmitter();
@@ -31,12 +32,35 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.ngOnChanges = function (changes) {
         if (!this.initComplete)
             return;
-        if (changes.facingMode) {
-            this.startCapturingVideo(); //restart
+        if (changes.facingMode
+            || changes.videoDevice
+            || changes.videoDeviceId) {
+            this.redraw(); //restart
         }
         if (changes.reflect) {
             this.applyReflect();
         }
+    };
+    WebCamComponent.prototype.ngOnDestroy = function () {
+        this.observer.disconnect();
+        window.removeEventListener('resize', this.onResize);
+        this.stop();
+    };
+    WebCamComponent.prototype.play = function () {
+        return this.redraw();
+    };
+    WebCamComponent.prototype.stop = function () {
+        var vid = this.getVideoElm();
+        if (vid && vid.pause) {
+            vid.pause();
+        }
+        if (this.stream) {
+            this.stream.getTracks().forEach(function (track) { return track.stop(); });
+        }
+    };
+    WebCamComponent.prototype.redraw = function () {
+        this.stop();
+        this.startCapturingVideo();
     };
     WebCamComponent.prototype.afterInitCycles = function () {
         var _this = this;
@@ -119,11 +143,19 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.promiseVideoOptions = function () {
         var promise = Promise.resolve();
         var videoOptions = {};
+        if (this.options.video && typeof (this.options.video) === 'object') {
+            Object.assign(videoOptions, this.options.video);
+        }
         if (this.facingMode) {
             videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
         }
-        else {
-            videoOptions.deviceId = this.videoDevice ? this.videoDevice.deviceId : this.videoDeviceId;
+        if (this.videoDeviceId) {
+            //videoOptions.deviceId = {exact:this.videoDeviceId}
+            videoOptions.deviceId = this.videoDeviceId;
+        }
+        else if (this.videoDevice) {
+            //videoOptions.deviceId = {exact:this.videoDevice.deviceId}
+            videoOptions.deviceId = this.videoDevice.deviceId;
         }
         return promise.then(function () { return videoOptions; });
     };
@@ -154,6 +186,8 @@ var WebCamComponent = (function () {
         setTimeout(function () {
             video.width = width;
             video.height = height;
+            _this.sets.element.width = width;
+            _this.sets.element.height = height;
             video.style.position = 'static';
             //now that we set a width and height, it may need another adjustment if it pushed percent based items around
             var resizeAgain = (!_this.options.width && width != parseInt(elm.offsetWidth, 10)) || (!_this.options.height && height != parseInt(elm.offsetHeight, 10));
@@ -239,18 +273,6 @@ var WebCamComponent = (function () {
             return this.onWebRTC();
         }
         return Promise.resolve(this.processSuccess());
-    };
-    WebCamComponent.prototype.ngOnDestroy = function () {
-        this.observer.disconnect();
-        window.removeEventListener('resize', this.onResize);
-        var vid = this.getVideoElm();
-        if (vid && vid.pause) {
-            vid.pause();
-        }
-        if (this.stream) {
-            this.stream.getTracks().forEach(function (track) { return track.stop(); });
-            //this.stream.getTracks()[0].stop()
-        }
     };
     WebCamComponent.prototype.getCanvas = function () {
         return document.createElement('canvas');

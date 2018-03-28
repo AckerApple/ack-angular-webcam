@@ -5,6 +5,13 @@ export interface vidElmOptions {
     audio: boolean | MediaTrackConstraints;
     video: boolean | MediaTrackConstraints;
 }
+export interface elementSets {
+    width: number;
+    height: number;
+}
+export interface sets {
+    element: elementSets;
+}
 export declare class WebCamComponent {
     private sanitizer;
     private element;
@@ -16,6 +23,7 @@ export declare class WebCamComponent {
     observer: MutationObserver;
     onResize: () => any;
     stream: MediaStream;
+    sets: sets;
     videoDevice: MediaDeviceInfo;
     videoDeviceId: string;
     reflect: boolean;
@@ -33,6 +41,10 @@ export declare class WebCamComponent {
     ngOnInit(): void;
     ngAfterViewInit(): void;
     ngOnChanges(changes: any): void;
+    ngOnDestroy(): void;
+    play(): void;
+    stop(): void;
+    redraw(): void;
     afterInitCycles(): void;
     applyReflect(): void;
     applyStream(stream: any): void;
@@ -56,7 +68,6 @@ export declare class WebCamComponent {
      * @returns {void}
      */
     startCapturingVideo(): Promise<any>;
-    ngOnDestroy(): void;
     getCanvas(): HTMLCanvasElement;
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     getBase64(mime?: any): Promise<string>;

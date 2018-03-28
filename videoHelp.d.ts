@@ -5,7 +5,7 @@ export declare function getMedia(): any;
  * Component options structure interface
  */
 export interface Options {
-    video: boolean | any;
+    video: boolean | MediaTrackConstraints;
     audio: boolean;
     width: number;
     height: number;
