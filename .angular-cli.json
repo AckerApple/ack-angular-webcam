@@ -1,9 +1,21 @@
 {
   "project": {
-    "name": "noname"
+    "name": "ack-angular-webcam"
   },
   "apps": [
     {
+      "name": "example",
+      "root": "example/app",
+      "outDir": "example/www",
+      "index": "index.html",
+      "main": "index.ts",
+      "tsconfig": "tsconfig.json",
+      "prefix": "",
+      "assets":[
+        "screenshot.png",
+        "fallback/**"
+      ]
+    },{
       "root": "test",
       "outDir": "test",
       "index": "index.html",

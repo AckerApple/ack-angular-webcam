@@ -135,7 +135,7 @@ table(
         textarea(
           style = "padding:.5em;font-size:1em;width:100%;height:100%;color:red;"
         )
-          |{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ cameras[index].error | json }}
+          |{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ getErrorJson(cameras[index].error) | json }}
     tr(*ngIf="!cameras[index].error")
       td(
         *ngIf   = "!cameras[index].destroy"
@@ -250,6 +250,11 @@ table(
           style     = "padding:.5em;font-size:1.1em;"
           "[style.background-color]" = "cameras[index].resize ? '#999' : null"
         ) Sizing
+        button(
+          "(click)" = "cameras[index].playing=cameras[index].playing?0:1;cameras[index].playing ? cameras[index].webcam.stop() : cameras[index].webcam.play()"
+          style     = "padding:.5em;font-size:1.1em;"
+          "[style.background-color]" = "cameras[index].resize ? '#999' : null"
+        ) Stop/Starts
       td
       td
   tr(style="height:60px")

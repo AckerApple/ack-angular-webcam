@@ -44,4 +44,11 @@ import { string as template } from "./app.template"
     })
     .catch( e=>console.error(e) )
   }
+
+  getErrorJson(error){
+    const keys = Object.getOwnPropertyNames(error)
+    const ob = {}
+    keys.forEach( key=>ob[key]=error[key] )
+    return ob     
+  }
 }

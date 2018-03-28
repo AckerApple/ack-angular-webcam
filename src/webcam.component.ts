@@ -73,7 +73,6 @@ export interface sets{
     this.isSupportUserMedia = getMedia()!=null ? true : false
     this.isSupportUserMedia = false
     this.isSupportWebRTC = !!(browser.mediaDevices && browser.mediaDevices.getUserMedia)
-
   }
 
   ngAfterViewInit(){
@@ -97,7 +96,29 @@ export interface sets{
     }
   }
 
+  ngOnDestroy(){
+    this.observer.disconnect()
+    window.removeEventListener('resize', this.onResize)
+    this.stop()
+  }
+
+  play(){
+    return this.redraw()
+  }
+
+  stop(){
+    const vid = this.getVideoElm()
+    if(vid && vid.pause){
+      vid.pause()
+    }
+
+    if( this.stream ){
+      this.stream.getTracks().forEach(track=>track.stop())
+    }
+  }
+
   redraw(){
+    this.stop()
     this.startCapturingVideo()
   }
 
@@ -204,13 +225,16 @@ export interface sets{
 
     if( this.facingMode ){
       videoOptions.facingMode = this.facingMode//{exact:this.facingMode}
-    }else{
-      if( this.videoDeviceId ){
-        videoOptions.deviceId = this.videoDeviceId
-      }else if( this.videoDevice ){
-        videoOptions.deviceId = this.videoDevice.deviceId
-      }
     }
+
+    if( this.videoDeviceId ){
+      //videoOptions.deviceId = {exact:this.videoDeviceId}
+      videoOptions.deviceId = this.videoDeviceId
+    }else if( this.videoDevice ){
+      //videoOptions.deviceId = {exact:this.videoDevice.deviceId}
+      videoOptions.deviceId = this.videoDevice.deviceId
+    }
+
 
     return promise.then( ()=>videoOptions )
   }
@@ -333,22 +357,6 @@ export interface sets{
     }
 
     return Promise.resolve( this.processSuccess() )
-  }
-
-  ngOnDestroy(){
-    this.observer.disconnect()
-    window.removeEventListener('resize', this.onResize)
-
-    const vid = this.getVideoElm()
-
-    if(vid && vid.pause){
-      vid.pause()
-    }
-
-    if( this.stream ){
-      this.stream.getTracks().forEach(track=>track.stop())
-      //this.stream.getTracks()[0].stop()
-    }
   }
 
   getCanvas(){

@@ -1,6 +1,9 @@
 # ack-angular-webcam - Change Log
 All notable changes to this project will be documented here.
 
+## [1.9.2] - 2018-03-28
+- Fixed Android camera switching. A stop must occur before changing cameras
+
 ## [1.9.1] - 2018-02-21
 - Data typed options.video boolean | MediaTrackConstraints
 - Fixed ngOnChanges bind with videoDevice videoDeviceId
