@@ -74,6 +74,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.logerror = function (e) {
         console.error(e);
+        console.info('debug cameras', this.cameras);
     };
     AppComponent = __decorate([
         core_1.Component({
@@ -927,4 +928,4 @@ module.exports = __webpack_require__("../../../../../example/app/index.ts");
 /***/ })
 
 },[0]);
-//# sourceMappingURL=main.a382f9563b12b14c09d0.bundle.js.map
+//# sourceMappingURL=main.d17eabbc22c457dab875.bundle.js.map
