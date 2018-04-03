@@ -219,8 +219,16 @@ export interface sets{
 
     const videoOptions:MediaTrackConstraints = {}
     
-    if(this.options.video && typeof(this.options.video)==='object'){
+    if( this.options.video && isOb(this.options.video) ){
       Object.assign(videoOptions, this.options.video)
+
+      if( videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length ){
+        delete videoOptions.width
+      }
+
+      if( videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length ){
+        delete videoOptions.height
+      }
     }
 
     if( this.facingMode ){
@@ -234,7 +242,6 @@ export interface sets{
       //videoOptions.deviceId = {exact:this.videoDevice.deviceId}
       videoOptions.deviceId = this.videoDevice.deviceId
     }
-
 
     return promise.then( ()=>videoOptions )
   }
@@ -250,8 +257,6 @@ export interface sets{
     if(!video)return
 
     video.style.position='absolute'
-    //video.width = 0
-    //video.height = 0
     
     const elm = this.useParentWidthHeight ? this.element.nativeElement.parentNode : this.element.nativeElement
 
@@ -285,7 +290,7 @@ export interface sets{
     video = video || this.getVideoElm()
     const dim = {width:0, height:0}
 
-    if(video.videoWidth){
+    if( video.videoWidth ){
       dim.width = video.videoWidth
       dim.height = video.videoHeight
     }else{
@@ -293,8 +298,8 @@ export interface sets{
       dim.height = this.options.height || parseInt(this.element.nativeElement.offsetHeight, 10)
     }
 
-    if(!dim.width)dim.width = 320
-    if(!dim.height)dim.height = 240
+    if( !dim.width )dim.width = 320
+    if( !dim.height )dim.height = 240
 
     return dim
   }
@@ -439,4 +444,9 @@ export interface sets{
   dataUriToFormData(base64, options){
     return dataUriToFormData(base64, {fileName:options.fileName})
   }
+}
+
+
+function isOb(v){
+  return typeof(v)==='object'
 }

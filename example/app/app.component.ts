@@ -51,4 +51,9 @@ import { string as template } from "./app.template"
     keys.forEach( key=>ob[key]=error[key] )
     return ob     
   }
+
+  logerror(e:Error){
+    console.error(e)
+    console.info('debug cameras', this.cameras)
+  }
 }
