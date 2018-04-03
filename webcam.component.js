@@ -143,8 +143,14 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.promiseVideoOptions = function () {
         var promise = Promise.resolve();
         var videoOptions = {};
-        if (this.options.video && typeof (this.options.video) === 'object') {
+        if (this.options.video && isOb(this.options.video)) {
             Object.assign(videoOptions, this.options.video);
+            if (videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length) {
+                delete videoOptions.width;
+            }
+            if (videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length) {
+                delete videoOptions.height;
+            }
         }
         if (this.facingMode) {
             videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
@@ -174,8 +180,6 @@ var WebCamComponent = (function () {
         if (!video)
             return;
         video.style.position = 'absolute';
-        //video.width = 0
-        //video.height = 0
         var elm = this.useParentWidthHeight ? this.element.nativeElement.parentNode : this.element.nativeElement;
         var width = this.options.width || parseInt(elm.offsetWidth, 10);
         var height = this.options.height || parseInt(elm.offsetHeight, 10);
@@ -377,4 +381,7 @@ var WebCamComponent = (function () {
     return WebCamComponent;
 }());
 exports.WebCamComponent = WebCamComponent;
+function isOb(v) {
+    return typeof (v) === 'object';
+}
 //# sourceMappingURL=webcam.component.js.map
