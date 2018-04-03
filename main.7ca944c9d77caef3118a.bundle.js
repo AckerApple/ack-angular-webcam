@@ -630,8 +630,14 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.promiseVideoOptions = function () {
         var promise = Promise.resolve();
         var videoOptions = {};
-        if (this.options.video && typeof (this.options.video) === 'object') {
+        if (this.options.video && isOb(this.options.video)) {
             Object.assign(videoOptions, this.options.video);
+            if (videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length) {
+                delete videoOptions.width;
+            }
+            if (videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length) {
+                delete videoOptions.height;
+            }
         }
         if (this.facingMode) {
             videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
@@ -878,6 +884,9 @@ var WebCamComponent = (function () {
     return WebCamComponent;
 }());
 exports.WebCamComponent = WebCamComponent;
+function isOb(v) {
+    return typeof (v) === 'object';
+}
 
 
 /***/ }),
@@ -928,4 +937,4 @@ module.exports = __webpack_require__("../../../../../example/app/index.ts");
 /***/ })
 
 },[0]);
-//# sourceMappingURL=main.d17eabbc22c457dab875.bundle.js.map
+//# sourceMappingURL=main.7ca944c9d77caef3118a.bundle.js.map
