@@ -86,33 +86,32 @@ import { WebCamComponent } from 'ack-angular-webcam';
 
 const template = `
 <ack-webcam
-  [(ref)]   = "webcam"
+  #webcam
   [options] = "options"
   (success) = "onCamSuccess($event)"
   (catch)   = "onCamError($event)"
 ></ack-webcam>
-<button (click)="genBase64()"> generate base64 </button>
-<button (click)="genPostData()"> generate post data </button>
+<button (click)="genBase64(webcam)"> generate base64 </button>
+<button (click)="genPostData(webcam)"> generate post data </button>
 `
 
 @Component({
   selector:'app-component',
   template:template
 }) export class AppComponent{
-  webcam:WebCamComponent//will be populated by <ack-webcam [(ref)]="webcam">
   base64
 
   constructor(public http:Http){}
 
-  genBase64(){
-    this.webcam.getBase64()
+  genBase64( webcam:WebCamComponent ){
+    webcam.getBase64()
     .then( base=>this.base64=base)
     .catch( e=>console.error(e) )
   }
 
   //get HTML5 FormData object and pretend to post to server
-  genPostData(){
-    this.webcam.captureAsFormData({fileName:'file.jpg'})
+  genPostData( webcam:WebCamComponent ){
+    webcam.captureAsFormData({fileName:'file.jpg'})
     .then( formData=>this.postFormData(formData) )
     .catch( e=>console.error(e) )
   }
@@ -151,7 +150,6 @@ ack-angular-webcam inputs and outputs
 (success) = new EventEmitter()
 (catch) : EventEmitter<Error> = new EventEmitter()
 
-[(ref)]   : WebCamComponent
 [(error)] : Error
 
 [options]:{

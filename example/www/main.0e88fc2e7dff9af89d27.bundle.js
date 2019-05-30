@@ -1,6 +1,6 @@
 webpackJsonp(["main"],{
 
-/***/ "../../../../../example/app/$$_lazy_route_resource lazy recursive":
+/***/ "./example/app/$$_lazy_route_resource lazy recursive":
 /***/ (function(module, exports) {
 
 function webpackEmptyAsyncContext(req) {
@@ -13,11 +13,11 @@ function webpackEmptyAsyncContext(req) {
 webpackEmptyAsyncContext.keys = function() { return []; };
 webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
 module.exports = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = "../../../../../example/app/$$_lazy_route_resource lazy recursive";
+webpackEmptyAsyncContext.id = "./example/app/$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
-/***/ "../../../../../example/app/app.component.ts":
+/***/ "./example/app/app.component.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32,10 +32,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var videoHelp_1 = __webpack_require__("../../../../../src/videoHelp.ts");
-var pack = __webpack_require__("../../../../../package.json");
-var app_template_1 = __webpack_require__("../../../../../example/app/app.template.ts");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var videoHelp_1 = __webpack_require__("./src/videoHelp.ts");
+var pack = __webpack_require__("./package.json");
+var app_template_1 = __webpack_require__("./example/app/app.template.ts");
 var AppComponent = (function () {
     function AppComponent(element) {
         this.element = element;
@@ -90,7 +90,7 @@ exports.AppComponent = AppComponent;
 
 /***/ }),
 
-/***/ "../../../../../example/app/app.module.ts":
+/***/ "./example/app/app.module.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -102,10 +102,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var platform_browser_1 = __webpack_require__("../../../platform-browser/esm5/platform-browser.js");
-var index_1 = __webpack_require__("../../../../../src/index.ts");
-var app_component_1 = __webpack_require__("../../../../../example/app/app.component.ts");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var platform_browser_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
+var index_1 = __webpack_require__("./src/index.ts");
+var app_component_1 = __webpack_require__("./example/app/app.component.ts");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -128,44 +128,44 @@ exports.AppModule = AppModule;
 
 /***/ }),
 
-/***/ "../../../../../example/app/app.template.ts":
+/***/ "./example/app/app.template.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.string = "<!-- devices--><div style=\"position:absolute;right:5px;color:#999999;\">v{{ version || '0.0.0' }}</div><ng-container *ngIf=\"changeConfig\"><ack-media-devices [(array)]=\"devices\" [(videoInputs)]=\"videoDevices\" [(audioInputs)]=\"audioDevices\" [(audioOutputs)]=\"audioOutputs\" [(error)]=\"deviceError\"></ack-media-devices><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><tbody *ngIf=\"!deviceError\"><tr><td colspan=\"3\" style=\"height:40px;\"><div style=\"font-weight:bold;font-size:1.3em;\">{{ devices?.length }} Devices</div>{{ audioOutputs?.length }} Audio Outputs</td></tr><tr style=\"height:40px;\"><td valign=\"bottom\">{{ videoDevices?.length }} Video Inputs</td><td valign=\"bottom\">{{ audioDevices?.length }} Audio Inputs</td><td>Facing Mode {{ isFacingModeSupported ? 'IS' : 'NOT' }} Supported</td></tr><tr style=\"height:40px;\"><td><select style=\"display:block;width:100%;height:100%;\" (change)=\"changeConfig.videoDeviceId=$event.target.value\"><option>default</option><option *ngFor=\"let device of videoDevices;let index=index\" [value]=\"device.deviceId\" [selected]=\"changeConfig.videoDeviceId==device.deviceId\">{{ device.label || device.kind+'('+index+')' }}</option></select></td><td><select style=\"display:block;width:100%;height:100%;\" (change)=\"changeConfig.audioDeviceId=$event.target.value\"><option>default</option><option *ngFor=\"let device of audioDevices;let index=index\" [value]=\"device.deviceId\" [selected]=\"changeConfig.audioDeviceId==device.deviceId\">{{ device.label || device.kind+'('+index+')' }}</option></select></td><td><select style=\"display:block;width:100%;height:100%;\" (change)=\"changeConfig.facingMode=$event.target.value\"><option>default</option><option *ngFor=\"let item of facingModes;let index=index\" [value]=\"item\" [selected]=\"changeConfig.facingMode==item\">{{ item }}</option></select></td></tr><tr><td colspan=\"3\"><textarea style=\"padding:.5em;font-size:1em;width:100%;height:100%;min-height:200px;\">{{ devices | json }}</textarea></td></tr></tbody><tfoot><tr *ngIf=\"deviceError\"><td colspan=\"3\"><textarea readonly=\"readonly\" style=\"padding:.5em;font-size:1em;width:100%;height:100%;color:red;\">{{ deviceError.name+'\r\r' }}{{ deviceError.message+'\r\r' }}{{ deviceError | json }}</textarea></td></tr><tr><td colspan=\"3\" style=\"height:60px;\"><button (click)=\"changeConfig=null\" style=\"padding:1em;font-size:1.2em;width:100%;\">close</button></td></tr></tfoot></table></ng-container><!-- capture--><table *ngIf=\"!changeConfig &amp;&amp; captured\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><tr><td colspan=\"2\" valign=\"top\" style=\"overflow:hidden;width:100%;text-align:center;background-position:center;background-size:contain;background-repeat:no-repeat;\" [hidden]=\"!captured\" [style.background-image]=\"base64?'url('+base64+')':null\">&nbsp;</td></tr><tr *ngIf=\"showBase64\" style=\"height:60px;\"><td colspan=\"2\"><input style=\"width:100%;padding:1em;\" [attr.value]=\"base64\" readonly=\"readonly\"/></td></tr><tr style=\"height:60px;\"><td><button (click)=\"showBase64=!showBase64\" style=\"padding:1em;font-size:1.2em;width:100%;\">{{ showBase64 ? 'Hide':'Show'}} Base64</button></td><td><button (click)=\"showBase64=null;captured=null\" style=\"padding:1em;font-size:1.2em;width:100%;\">Close</button></td></tr></table><!-- webcam--><table *ngIf=\"!captured\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><ng-container *ngFor=\"let camConfig of cameras; let index=index\"><tr *ngIf=\"cameras[index].error\"><td colspan=\"2\"><textarea style=\"padding:.5em;font-size:1em;width:100%;height:100%;color:red;\">{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ getErrorJson(cameras[index].error) | json }}</textarea></td></tr><tr *ngIf=\"!cameras[index].error\"><td *ngIf=\"!cameras[index].destroy\" colspan=\"3\" valign=\"top\"><ack-webcam [(ref)]=\"cameras[index].webcam\" [videoDeviceId]=\"cameras[index].videoDeviceId\" [facingMode]=\"cameras[index].facingMode\" [reflect]=\"cameras[index].reflect\" [(error)]=\"cameras[index].error\" (errorChange)=\"logerror($event)\" [options]=\"cameras[index].options\" (success)=\"onSuccess($event)\" style=\"width:100%;height:100%;display:block;text-align:center;\"></ack-webcam></td></tr><tr style=\"height:60px;\"><td colspan=\"3\" style=\"text-align:center;\"><div *ngIf=\"cameras[index].resize\"><div>width:<input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.width=$event.target.value &amp;&amp; cameras[index].webcam.resize() : null\" [placeholder]=\"cameras[index].webcam.sets.element.width\"/>px" +
+exports.string = "<!-- devices--><div style=\"position:absolute;right:5px;color:#999999;\">v{{ version || '0.0.0' }}</div><ng-container *ngIf=\"changeConfig\"><ack-media-devices [(array)]=\"devices\" [(videoInputs)]=\"videoDevices\" [(audioInputs)]=\"audioDevices\" [(audioOutputs)]=\"audioOutputs\" [(error)]=\"deviceError\"></ack-media-devices><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><tbody *ngIf=\"!deviceError\"><tr><td colspan=\"3\" style=\"height:40px;\"><div style=\"font-weight:bold;font-size:1.3em;\">{{ devices?.length }} Devices</div>{{ audioOutputs?.length }} Audio Outputs</td></tr><tr style=\"height:40px;\"><td valign=\"bottom\">{{ videoDevices?.length }} Video Inputs</td><td valign=\"bottom\">{{ audioDevices?.length }} Audio Inputs</td><td>Facing Mode {{ isFacingModeSupported ? 'IS' : 'NOT' }} Supported</td></tr><tr style=\"height:40px;\"><td><select style=\"display:block;width:100%;height:100%\" (change)=\"changeConfig.videoDeviceId=$event.target.value\"><option>default</option><option *ngFor=\"let device of videoDevices;let index=index\" [value]=\"device.deviceId\" [selected]=\"changeConfig.videoDeviceId==device.deviceId\">{{ device.label || device.kind+'('+index+')' }}</option></select></td><td><select style=\"display:block;width:100%;height:100%\" (change)=\"changeConfig.audioDeviceId=$event.target.value\"><option>default</option><option *ngFor=\"let device of audioDevices;let index=index\" [value]=\"device.deviceId\" [selected]=\"changeConfig.audioDeviceId==device.deviceId\">{{ device.label || device.kind+'('+index+')' }}</option></select></td><td><select style=\"display:block;width:100%;height:100%\" (change)=\"changeConfig.facingMode=$event.target.value\"><option>default</option><option *ngFor=\"let item of facingModes;let index=index\" [value]=\"item\" [selected]=\"changeConfig.facingMode==item\">{{ item }}</option></select></td></tr><tr><td colspan=\"3\"><textarea style=\"padding:.5em;font-size:1em;width:100%;height:100%;min-height:200px;\">{{ devices | json }}</textarea></td></tr></tbody><tfoot><tr *ngIf=\"deviceError\"><td colspan=\"3\"><textarea readonly=\"readonly\" style=\"padding:.5em;font-size:1em;width:100%;height:100%;color:red;\">{{ deviceError.name+'\r\r' }}{{ deviceError.message+'\r\r' }}{{ deviceError | json }}</textarea></td></tr><tr><td colspan=\"3\" style=\"height:60px\"><button (click)=\"changeConfig=null\" style=\"padding:1em;font-size:1.2em;width:100%\">close</button></td></tr></tfoot></table></ng-container><!-- capture--><table *ngIf=\"!changeConfig &amp;&amp; captured\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><tr><td colspan=\"2\" valign=\"top\" style=\"overflow:hidden;width:100%;text-align:center;background-position:center;background-size:contain;background-repeat:no-repeat;\" [hidden]=\"!captured\" [style.background-image]=\"base64?'url('+base64+')':null\">&nbsp;</td></tr><tr *ngIf=\"showBase64\" style=\"height:60px\"><td colspan=\"2\"><input style=\"width:100%;padding:1em;\" [attr.value]=\"base64\" readonly=\"readonly\"/></td></tr><tr style=\"height:60px\"><td><button (click)=\"showBase64=!showBase64\" style=\"padding:1em;font-size:1.2em;width:100%;\">{{ showBase64 ? 'Hide':'Show'}} Base64</button></td><td><button (click)=\"showBase64=null;captured=null\" style=\"padding:1em;font-size:1.2em;width:100%;\">Close</button></td></tr></table><!-- webcam--><table *ngIf=\"!captured\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" height=\"100%\"><ng-container *ngFor=\"let camConfig of cameras; let index=index\"><tr *ngIf=\"cameras[index].error\"><td colspan=\"2\"><textarea style=\"padding:.5em;font-size:1em;width:100%;height:100%;color:red;\">{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ getErrorJson(cameras[index].error) | json }}</textarea></td></tr><tr *ngIf=\"!cameras[index].error\"><td *ngIf=\"!cameras[index].destroy\" colspan=\"3\" valign=\"top\"><ack-webcam #webcam=\"\" [videoDeviceId]=\"cameras[index].videoDeviceId\" [facingMode]=\"cameras[index].facingMode\" [reflect]=\"cameras[index].reflect\" [(error)]=\"cameras[index].error\" (errorChange)=\"logerror($event)\" [options]=\"cameras[index].options\" (success)=\"onSuccess($event)\" style=\"width:100%;height:100%;display:block;text-align:center;\"></ack-webcam></td></tr><tr style=\"height:60px\"><td colspan=\"3\" style=\"text-align:center\"><div *ngIf=\"cameras[index].resize\"><div>width:<input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.width=$event.target.value &amp;&amp; webcam.resize() : null\" [placeholder]=\"webcam.sets.element.width\"/>px" +
     "\n&nbsp;&nbsp;x&nbsp;&nbsp;" +
-    "\nheight:<input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.height=$event.target.value &amp;&amp; cameras[index].webcam.resize() : null\" [placeholder]=\"cameras[index].webcam.sets.element.height\"/>px</div><br/><table align=\"center\"><tr><td></td><td>Video Width</td><td> Video Height</td></tr><tr><td>min:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.min=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.min=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td></tr><tr><td>ideal:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td></tr><tr><td>exact:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.exact=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.height.exact=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td></tr><tr><td>max:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.max=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.max=$event.target.value &amp;&amp; cameras[index].webcam.redraw() : null\"/></td></tr></table></div><button (click)=\"cameras[index].reflect=!cameras[index].reflect\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].reflect ? '#999' : null\">Reflect{{ cameras[index].reflect ? 'ing' : ''}}</button><button *ngIf=\"cameras[index].webcam\" (click)=\"captureBase64(cameras[index].webcam)\" style=\"padding:.5em;font-size:1.1em;\">Capture</button><button (click)=\"cameras.splice(index,1)\" style=\"padding:.5em;font-size:1.1em;\">Destroy</button><button (click)=\"changeConfig=camConfig\" style=\"padding:.5em;font-size:1.1em;\">Devices</button><button (click)=\"cameras[index].resize=!cameras[index].resize\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].resize ? '#999' : null\">Sizing</button><button (click)=\"cameras[index].playing=cameras[index].playing?0:1;cameras[index].playing ? cameras[index].webcam.stop() : cameras[index].webcam.play()\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].resize ? '#999' : null\">Stop/Starts</button></td><td></td><td></td></tr></ng-container><tr style=\"height:60px;\"><td colspan=\"3\"><button (click)=\"addCamera()\" style=\"padding:1em;font-size:1.2em;width:100%;\">Add Device</button></td></tr></table>";
+    "\nheight:<input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.height=$event.target.value &amp;&amp; webcam.resize() : null\" [placeholder]=\"webcam.sets.element.height\"/>px</div><br/><table align=\"center\"><tr><td></td><td>Video Width</td><td> Video Height</td></tr><tr><td>min:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.min=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.min=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td></tr><tr><td>ideal:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td></tr><tr><td>exact:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.exact=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.height.exact=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td></tr><tr><td>max:</td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.max=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td><td><input type=\"number\" (keyup)=\"$event.target.value ? cameras[index].options.video.width.max=$event.target.value &amp;&amp; webcam.redraw() : null\"/></td></tr></table></div><button (click)=\"cameras[index].reflect=!cameras[index].reflect\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].reflect ? '#999' : null\">Reflect{{ cameras[index].reflect ? 'ing' : ''}}</button><button *ngIf=\"webcam\" (click)=\"captureBase64(webcam)\" style=\"padding:.5em;font-size:1.1em;\">Capture</button><button (click)=\"cameras.splice(index,1)\" style=\"padding:.5em;font-size:1.1em;\">Destroy</button><button (click)=\"changeConfig=camConfig\" style=\"padding:.5em;font-size:1.1em;\">Devices</button><button (click)=\"cameras[index].resize=!cameras[index].resize\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].resize ? '#999' : null\">Sizing</button><button (click)=\"cameras[index].playing=cameras[index].playing?0:1;cameras[index].playing ? webcam.stop() : webcam.play()\" style=\"padding:.5em;font-size:1.1em;\" [style.background-color]=\"cameras[index].resize ? '#999' : null\">Stop/Starts</button></td><td></td><td></td></tr></ng-container><tr style=\"height:60px\"><td colspan=\"3\"><button (click)=\"addCamera()\" style=\"padding:1em;font-size:1.2em;width:100%\">Add Device</button></td></tr></table>";
 
 
 /***/ }),
 
-/***/ "../../../../../example/app/index.ts":
+/***/ "./example/app/index.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__("../../../../zone.js/dist/zone.js");
-__webpack_require__("../../../../reflect-metadata/Reflect.js");
+__webpack_require__("./node_modules/zone.js/dist/zone.js");
+__webpack_require__("./node_modules/reflect-metadata/Reflect.js");
 //import { enableProdMode } from "@angular/core"
-var platform_browser_dynamic_1 = __webpack_require__("../../../platform-browser-dynamic/esm5/platform-browser-dynamic.js");
-var app_module_1 = __webpack_require__("../../../../../example/app/app.module.ts");
+var platform_browser_dynamic_1 = __webpack_require__("./node_modules/@angular/platform-browser-dynamic/esm5/platform-browser-dynamic.js");
+var app_module_1 = __webpack_require__("./example/app/app.module.ts");
 //enableProdMode()
 platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule);
 
 
 /***/ }),
 
-/***/ "../../../../../package.json":
+/***/ "./package.json":
 /***/ (function(module, exports) {
 
-module.exports = {"name":"ack-angular-webcam","version":"1.9.3","description":"Angular webcam component. Based on MediaDevices and getUserMedia.js ","main":"dist/index.js","typings":"dist/index.d.ts","scripts":{"build:templates":"ack-pug-bundler example/app example/app --outFileExt template.ts --outType ts --oneToOne","start":"ack-reload -d example/www -b","test:old":"karma start --sr","watch:js":"ack-webpack ./example/app/index.ts example/www/index.js --project example/app/tsconfig.json --modules . --watch --browser","watch:dist":"watch \"npm-run-all build:dist\" src/","watch":"npm-run-all --parallel watch:dist watch:js watch:templates","watch:templates":"npm run build:templates -- --watch","build:dist":"ngc --declaration --project src","ack-webpack":"ack-webpack","build":"npm-run-all build:templates compile:dist:package build:dist build:js","build:js":"node --max-old-space-size=8192 ./node_modules/.bin/ng build --app=example --sourcemaps=true --output-hashing=all","compile:dist:package":"node scripts/update-dist-package.js","test":"ng test --browser PhantomJS --single-run","test:watch":"ng test"},"repository":{"type":"git","url":"git+https://github.com/ackerapple/ack-angular-webcam.git"},"keywords":["ng2","Angular","getusermedia","webcam","video","gum"],"author":"Akcer Apple","licenses":[{"type":"MIT"}],"devDependencies":{"@angular/cli":"^1.6.3","@angular/common":"^5.1.2","@angular/compiler":"^5.1.2","@angular/compiler-cli":"^5.1.2","@angular/core":"^5.1.2","@angular/platform-browser":"^5.1.2","@angular/platform-browser-dynamic":"^5.1.2","@types/jasmine":"^2.8.3","ack-pug-bundler":"^1.3.15","ack-webpack":"^1.2.1","classlist-polyfill":"^1.2.0","core-js":"^2.5.3","jasmine":"^2.8.0","karma":"^2.0.0","karma-chrome-launcher":"^2.2.0","karma-coverage-istanbul-reporter":"^1.3.3","karma-jasmine":"^1.1.1","karma-jasmine-html-reporter":"^0.2.2","karma-phantomjs-launcher":"^1.0.4","minimatch":"^3.0.4","npm-run-all":"^4.1.2","phantomjs-prebuilt":"^2.1.16","reflect-metadata":"^0.1.10","rxjs":"^5.5.6","ts-helpers":"^1.1.2","ts-loader":"^3.2.0","typescript":"2.4.2","webpack":"^3.10.0","webpack-merge":"^4.1.1","zone.js":"^0.8.19"},"bugs":{"url":"https://github.com/ackerapple/ack-angular-webcam/issues"},"homepage":"https://github.com/ackerapple/ack-angular-webcam#readme","directories":{"example":"example"},"license":"MIT","private":true,"scriptsInfo":{"test":"Tests angular app using karama and jasmine","test:watch":"Opens local browser to test angular app"}}
+module.exports = {"name":"ack-angular-webcam","version":"1.10.0","description":"Angular webcam component. Based on MediaDevices and getUserMedia.js ","main":"dist/index.js","typings":"dist/index.d.ts","scripts":{"build:templates":"ack-pug-bundler example/app example/app --outFileExt template.ts --outType ts --oneToOne","start":"ack-reload -d example/www -b","test:old":"karma start --sr","watch:js":"ack-webpack ./example/app/index.ts example/www/index.js --project example/app/tsconfig.json --modules . --watch --browser","watch:dist":"watch \"npm-run-all build:dist\" src/","watch":"npm-run-all --parallel watch:dist watch:js watch:templates","watch:templates":"npm run build:templates -- --watch","build:dist":"ngc --declaration --project src","ack-webpack":"ack-webpack","build":"npm-run-all build:templates compile:dist:package build:dist build:js","build:js":"node --max-old-space-size=8192 ./node_modules/.bin/ng build --app=example --sourcemaps=true --output-hashing=all","compile:dist:package":"node scripts/update-dist-package.js","test":"ng test --browser PhantomJS --single-run","test:watch":"ng test"},"repository":{"type":"git","url":"git+https://github.com/ackerapple/ack-angular-webcam.git"},"keywords":["ng2","Angular","getusermedia","webcam","video","gum"],"author":"Akcer Apple","licenses":[{"type":"MIT"}],"devDependencies":{"@angular/cli":"^1.6.3","@angular/common":"^5.1.2","@angular/compiler":"^5.1.2","@angular/compiler-cli":"^5.1.2","@angular/core":"^5.1.2","@angular/platform-browser":"^5.1.2","@angular/platform-browser-dynamic":"^5.1.2","ack-pug-bundler":"^1.4.7","ack-webpack":"^1.2.1","classlist-polyfill":"^1.2.0","core-js":"^2.5.3","minimatch":"^3.0.4","npm-run-all":"^4.1.2","reflect-metadata":"^0.1.10","rxjs":"^5.5.6","ts-helpers":"^1.1.2","ts-loader":"^3.2.0","typescript":"2.4.2","webpack":"^3.10.0","webpack-merge":"^4.1.1","zone.js":"^0.8.19"},"bugs":{"url":"https://github.com/ackerapple/ack-angular-webcam/issues"},"homepage":"https://github.com/ackerapple/ack-angular-webcam#readme","directories":{"example":"example"},"license":"MIT","private":true,"scriptsInfo":{"test":"Tests angular app using karama and jasmine","test:watch":"Opens local browser to test angular app"}}
 
 /***/ }),
 
-/***/ "../../../../../src/AckMediaDevices.directive.ts":
+/***/ "./src/AckMediaDevices.directive.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -180,8 +180,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var videoHelp_1 = __webpack_require__("../../../../../src/videoHelp.ts");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var videoHelp_1 = __webpack_require__("./src/videoHelp.ts");
 var AckMediaDevices = (function () {
     function AckMediaDevices() {
         this.array = [];
@@ -277,27 +277,27 @@ exports.AckMediaDevices = AckMediaDevices;
 
 /***/ }),
 
-/***/ "../../../../../src/index.ts":
+/***/ "./src/index.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var webcam_component_1 = __webpack_require__("../../../../../src/webcam.component.ts");
+var webcam_component_1 = __webpack_require__("./src/webcam.component.ts");
 exports.WebCamComponent = webcam_component_1.WebCamComponent;
-var webcam_module_1 = __webpack_require__("../../../../../src/webcam.module.ts");
+var webcam_module_1 = __webpack_require__("./src/webcam.module.ts");
 exports.WebCamModule = webcam_module_1.WebCamModule;
 
 
 /***/ }),
 
-/***/ "../../../../../src/videoHelp.ts":
+/***/ "./src/videoHelp.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 exports.browser = navigator;
 function getMedia() {
     return exports.browser.getUserMedia
@@ -472,7 +472,7 @@ exports.isFacingModeSupported = isFacingModeSupported;
 
 /***/ }),
 
-/***/ "../../../../../src/webcam.component.ts":
+/***/ "./src/webcam.component.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -487,22 +487,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var platform_browser_1 = __webpack_require__("../../../platform-browser/esm5/platform-browser.js");
-var videoHelp_1 = __webpack_require__("../../../../../src/videoHelp.ts");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var platform_browser_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
+var videoHelp_1 = __webpack_require__("./src/videoHelp.ts");
 var template = "<video id=\"video\" *ngIf=\"(isSupportUserMedia||isSupportWebRTC)\" autoplay=\"\" playsinline=\"\">Video stream not available</video>";
 var WebCamComponent = (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
-        this.isSupportUserMedia = false;
-        this.isSupportWebRTC = false;
-        this.isFallback = false;
         this.sets = { element: { width: 0, height: 0 } };
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
         this.success = new core_1.EventEmitter();
-        this.refChange = new core_1.EventEmitter();
         this.errorChange = new core_1.EventEmitter();
         this.catcher = new core_1.EventEmitter();
     }
@@ -573,7 +569,7 @@ var WebCamComponent = (function () {
         }
         this.initComplete = true;
         //deprecated. Use angular hash template referencing and @ViewChild
-        setTimeout(function () { return _this.refChange.emit(_this); }, 0);
+        //setTimeout(()=>this.refChange.emit(this), 0)
         this.createVideoResizer();
         this.startCapturingVideo()
             .then(function () { return setTimeout(function () { return _this.resize(); }, 10); })
@@ -632,12 +628,14 @@ var WebCamComponent = (function () {
         var videoOptions = {};
         if (this.options.video && isOb(this.options.video)) {
             Object.assign(videoOptions, this.options.video);
+            /* attempt to prevent bad videoOptions */
             if (videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length) {
                 delete videoOptions.width;
             }
             if (videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length) {
                 delete videoOptions.height;
             }
+            /* end: fix vid options */
         }
         if (this.facingMode) {
             videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
@@ -755,7 +753,28 @@ var WebCamComponent = (function () {
         return Promise.resolve(this.processSuccess());
     };
     WebCamComponent.prototype.getCanvas = function () {
-        return document.createElement('canvas');
+        var canvas = document.createElement('canvas');
+        var video = this.getVideoElm();
+        this.setCanvasWidth(canvas, video);
+        var ctx = canvas.getContext('2d');
+        if (this.reflect) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
+        ctx.drawImage(video, 0, 0);
+        return canvas;
+    };
+    WebCamComponent.prototype.getBlob = function () {
+        var _this = this;
+        return new Promise(function (res, rej) {
+            var canvas = _this.getCanvas();
+            canvas.toBlob(function (file) {
+                res(file);
+            }, _this.mime, 1);
+        });
+    };
+    WebCamComponent.prototype.getFile = function (fileName) {
+        return this.getBlob().then(function (file) { return blobToFile(file, fileName); });
     };
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     WebCamComponent.prototype.getBase64 = function (mime) {
@@ -765,20 +784,11 @@ var WebCamComponent = (function () {
         }
         else {
             var canvas = this.getCanvas();
-            var video = this.getVideoElm();
-            this.setCanvasWidth(canvas, video);
-            var ctx = canvas.getContext('2d');
-            if (this.reflect) {
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-            }
-            ctx.drawImage(video, 0, 0);
             return Promise.resolve(canvas.toDataURL(mime));
         }
     };
     WebCamComponent.prototype.setCanvasWidth = function (canvas, video) {
         var di = this.getVideoDimensions(video);
-        canvas = canvas || this.getCanvas();
         canvas.width = di.width;
         canvas.height = di.height;
     };
@@ -851,16 +861,8 @@ var WebCamComponent = (function () {
     ], WebCamComponent.prototype, "options", void 0);
     __decorate([
         core_1.Output(),
-        __metadata("design:type", Object)
-    ], WebCamComponent.prototype, "success", void 0);
-    __decorate([
-        core_1.Input(),
-        __metadata("design:type", WebCamComponent)
-    ], WebCamComponent.prototype, "ref", void 0);
-    __decorate([
-        core_1.Output(),
         __metadata("design:type", core_1.EventEmitter)
-    ], WebCamComponent.prototype, "refChange", void 0);
+    ], WebCamComponent.prototype, "success", void 0);
     __decorate([
         core_1.Input(),
         __metadata("design:type", Error)
@@ -876,8 +878,7 @@ var WebCamComponent = (function () {
     WebCamComponent = __decorate([
         core_1.Component({
             selector: 'ack-webcam',
-            template: template,
-            exportAs: 'webcam'
+            template: template
         }),
         __metadata("design:paramtypes", [platform_browser_1.DomSanitizer, core_1.ElementRef])
     ], WebCamComponent);
@@ -887,11 +888,19 @@ exports.WebCamComponent = WebCamComponent;
 function isOb(v) {
     return typeof (v) === 'object';
 }
+function blobToFile(theBlob, fileName) {
+    var b = theBlob;
+    //A Blob() is almost a File() - it's just missing the two properties below which we will add
+    b.lastModifiedDate = new Date();
+    b.name = fileName;
+    //Cast to a File() type
+    return theBlob;
+}
 
 
 /***/ }),
 
-/***/ "../../../../../src/webcam.module.ts":
+/***/ "./src/webcam.module.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -903,10 +912,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var common_1 = __webpack_require__("../../../common/esm5/common.js");
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var webcam_component_1 = __webpack_require__("../../../../../src/webcam.component.ts");
-var AckMediaDevices_directive_1 = __webpack_require__("../../../../../src/AckMediaDevices.directive.ts");
+var common_1 = __webpack_require__("./node_modules/@angular/common/esm5/common.js");
+var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var webcam_component_1 = __webpack_require__("./src/webcam.component.ts");
+var AckMediaDevices_directive_1 = __webpack_require__("./src/AckMediaDevices.directive.ts");
 var declarations = [
     webcam_component_1.WebCamComponent,
     AckMediaDevices_directive_1.AckMediaDevices
@@ -931,10 +940,10 @@ exports.WebCamModule = WebCamModule;
 /***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__("../../../../../example/app/index.ts");
+module.exports = __webpack_require__("./example/app/index.ts");
 
 
 /***/ })
 
 },[0]);
-//# sourceMappingURL=main.62b70302580672923dd7.bundle.js.map
+//# sourceMappingURL=main.0e88fc2e7dff9af89d27.bundle.js.map

@@ -30,14 +30,13 @@ export interface sets{
 
 @Component({
   selector: 'ack-webcam',
-  template: template,
-  exportAs: 'webcam'
+  template: template
 }) export class WebCamComponent {
   /* platform support variables */
     flashPlayer:Fallback
-    isSupportUserMedia: boolean = false
-    isSupportWebRTC: boolean = false
-    isFallback: boolean = false
+    isSupportUserMedia: boolean
+    isSupportWebRTC: boolean
+    isFallback: boolean
   /* end: platform support variables */
   
   initComplete:boolean
@@ -57,11 +56,11 @@ export interface sets{
   @Input() useParentWidthHeight:boolean = false
   
   @Input() options: Options
-  @Output() success = new EventEmitter()
+  @Output() success:EventEmitter<MediaStream> = new EventEmitter()
 
   //-Lazy @ViewChild() variable reference
-  @Input() ref:WebCamComponent
-  @Output() refChange:EventEmitter<WebCamComponent> = new EventEmitter()
+  //@Input() ref:WebCamComponent
+  //@Output() refChange:EventEmitter<WebCamComponent> = new EventEmitter()
   
   @Input() error:Error
   @Output() errorChange:EventEmitter<Error> = new EventEmitter()
@@ -150,7 +149,7 @@ export interface sets{
     this.initComplete = true
     
     //deprecated. Use angular hash template referencing and @ViewChild
-    setTimeout(()=>this.refChange.emit(this), 0)
+    //setTimeout(()=>this.refChange.emit(this), 0)
 
     this.createVideoResizer()
     
@@ -171,7 +170,7 @@ export interface sets{
     }
   }
 
-  applyStream(stream){
+  applyStream( stream:MediaStream ){
     const videoElm = this.getVideoElm()
     videoElm.srcObject = stream
     this.applyReflect()
@@ -222,13 +221,15 @@ export interface sets{
     if( this.options.video && isOb(this.options.video) ){
       Object.assign(videoOptions, this.options.video)
 
-      if( videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length ){
-        delete videoOptions.width
-      }
+      /* attempt to prevent bad videoOptions */
+        if( videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length ){
+          delete videoOptions.width
+        }
 
-      if( videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length ){
-        delete videoOptions.height
-      }
+        if( videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length ){
+          delete videoOptions.height
+        }
+      /* end: fix vid options */
     }
 
     if( this.facingMode ){
@@ -365,33 +366,46 @@ export interface sets{
   }
 
   getCanvas(){
-    return document.createElement('canvas')
+    const canvas = document.createElement('canvas')
+    const video = this.getVideoElm()
+    this.setCanvasWidth(canvas, video)
+    const ctx = canvas.getContext('2d')
+
+    if( this.reflect ){
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+    }
+
+    ctx.drawImage(video, 0, 0)
+    return canvas
+  }
+
+  getBlob():Promise<Blob>{
+    return new Promise((res,rej)=>{
+      const canvas = this.getCanvas()
+      canvas.toBlob(file=>{
+        res(file)
+      }, this.mime, 1)
+    })
+  }
+
+  getFile( fileName:string ):Promise<File>{
+    return this.getBlob().then(file=>blobToFile(file,fileName))
   }
 
   /** returns promise . @mime - null=png . Also accepts image/jpeg */
-  getBase64(mime?){
+  getBase64(mime?):Promise<string>{
     if(this.isFallback){
       return this.flashPlayer.captureBase64(mime||this.mime)
       //return this.getFallbackBase64(mime)
     }else{
       const canvas = this.getCanvas()
-      const video = this.getVideoElm()
-      this.setCanvasWidth(canvas, video)
-      const ctx = canvas.getContext('2d')
-
-      if( this.reflect ){
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-      }
-
-      ctx.drawImage(video, 0, 0)
       return Promise.resolve( canvas.toDataURL(mime) )
     }
   }
 
-  setCanvasWidth(canvas?, video?){
+  setCanvasWidth(canvas, video){
     const di = this.getVideoDimensions(video)
-    canvas = canvas || this.getCanvas()
     canvas.width = di.width
     canvas.height = di.height
   }
@@ -449,4 +463,16 @@ export interface sets{
 
 function isOb(v){
   return typeof(v)==='object'
+}
+
+function blobToFile(
+  theBlob: Blob, fileName:string
+ ):File{
+    var b: any = theBlob;
+    //A Blob() is almost a File() - it's just missing the two properties below which we will add
+    b.lastModifiedDate = new Date();
+    b.name = fileName;
+
+    //Cast to a File() type
+    return <File>theBlob;
 }
