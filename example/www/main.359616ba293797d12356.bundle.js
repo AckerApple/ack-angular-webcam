@@ -277,6 +277,36 @@ exports.AckMediaDevices = AckMediaDevices;
 
 /***/ }),
 
+/***/ "./src/audioTest.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+console.log("loading");
+//stream.getAudioTracks()[0].stop()
+// success callback when requesting audio input stream
+function gotStream(stream) {
+    console.log("stream", stream);
+    //window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    var audioContext = new AudioContext();
+    // Create an AudioNode from the stream.
+    var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    // Connect it to the destination to hear yourself (or any other node for processing!)
+    mediaStreamSource.connect(audioContext.destination);
+    console.log("connected");
+    setTimeout(function () {
+        mediaStreamSource.disconnect();
+    }, 10000);
+}
+//navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+navigator.getUserMedia({ audio: true }, gotStream, function (e) { console.log('e', e); });
+exports.a = 1;
+console.log("loaded");
+
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -487,6 +517,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var a = __webpack_require__("./src/audioTest.ts");
+console.log("a", a);
 var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 var platform_browser_1 = __webpack_require__("./node_modules/@angular/platform-browser/esm5/platform-browser.js");
 var videoHelp_1 = __webpack_require__("./src/videoHelp.ts");
@@ -501,6 +533,7 @@ var WebCamComponent = (function () {
         this.success = new core_1.EventEmitter();
         this.errorChange = new core_1.EventEmitter();
         this.catcher = new core_1.EventEmitter();
+        console.log("123");
     }
     WebCamComponent.prototype.ngOnInit = function () {
         this.isSupportUserMedia = videoHelp_1.getMedia() != null ? true : false;
@@ -880,7 +913,8 @@ var WebCamComponent = (function () {
             selector: 'ack-webcam',
             template: template
         }),
-        __metadata("design:paramtypes", [platform_browser_1.DomSanitizer, core_1.ElementRef])
+        __metadata("design:paramtypes", [platform_browser_1.DomSanitizer,
+            core_1.ElementRef])
     ], WebCamComponent);
     return WebCamComponent;
 }());
@@ -946,4 +980,4 @@ module.exports = __webpack_require__("./example/app/index.ts");
 /***/ })
 
 },[0]);
-//# sourceMappingURL=main.0e88fc2e7dff9af89d27.bundle.js.map
+//# sourceMappingURL=main.359616ba293797d12356.bundle.js.map

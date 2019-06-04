@@ -1,3 +1,6 @@
+import * as a from './audioTest'
+console.log("a",a)
+
 import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import {
@@ -66,7 +69,11 @@ export interface sets{
   @Output() errorChange:EventEmitter<Error> = new EventEmitter()
   @Output('catch') catcher:EventEmitter<Error> = new EventEmitter()
 
-  constructor(private sanitizer: DomSanitizer, private element: ElementRef){}
+  constructor(
+    private sanitizer: DomSanitizer,
+    private element: ElementRef){
+    console.log("123")
+  }
 
   ngOnInit(){
     this.isSupportUserMedia = getMedia()!=null ? true : false
