@@ -31,9 +31,7 @@ export declare class WebCamComponent {
     mime: string;
     useParentWidthHeight: boolean;
     options: Options;
-    success: EventEmitter<{}>;
-    ref: WebCamComponent;
-    refChange: EventEmitter<WebCamComponent>;
+    success: EventEmitter<MediaStream>;
     error: Error;
     errorChange: EventEmitter<Error>;
     catcher: EventEmitter<Error>;
@@ -47,7 +45,7 @@ export declare class WebCamComponent {
     redraw(): void;
     afterInitCycles(): void;
     applyReflect(): void;
-    applyStream(stream: any): void;
+    applyStream(stream: MediaStream): void;
     createVideoResizer(): void;
     applyDefaults(): void;
     onWebRTC(): Promise<MediaStream>;
@@ -69,9 +67,11 @@ export declare class WebCamComponent {
      */
     startCapturingVideo(): Promise<any>;
     getCanvas(): HTMLCanvasElement;
+    getBlob(): Promise<Blob>;
+    getFile(fileName: string): Promise<File>;
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
     getBase64(mime?: any): Promise<string>;
-    setCanvasWidth(canvas?: any, video?: any): void;
+    setCanvasWidth(canvas: any, video: any): void;
     /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
     createVidElmOb(): HTMLObjectElement;
     setupFallback(): void;

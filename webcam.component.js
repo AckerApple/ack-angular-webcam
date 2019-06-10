@@ -1,23 +1,30 @@
 "use strict";
+//import * as a from './audioTest'
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
 var videoHelp_1 = require("./videoHelp");
 var template = "<video id=\"video\" *ngIf=\"(isSupportUserMedia||isSupportWebRTC)\" autoplay=\"\" playsinline=\"\">Video stream not available</video>";
-var WebCamComponent = (function () {
+var WebCamComponent = /** @class */ (function () {
     function WebCamComponent(sanitizer, element) {
         this.sanitizer = sanitizer;
         this.element = element;
-        this.isSupportUserMedia = false;
-        this.isSupportWebRTC = false;
-        this.isFallback = false;
         this.sets = { element: { width: 0, height: 0 } };
         this.mime = 'image/jpeg';
         this.useParentWidthHeight = false;
         this.success = new core_1.EventEmitter();
-        this.refChange = new core_1.EventEmitter();
         this.errorChange = new core_1.EventEmitter();
         this.catcher = new core_1.EventEmitter();
+        console.log("123");
     }
     WebCamComponent.prototype.ngOnInit = function () {
         this.isSupportUserMedia = videoHelp_1.getMedia() != null ? true : false;
@@ -86,7 +93,7 @@ var WebCamComponent = (function () {
         }
         this.initComplete = true;
         //deprecated. Use angular hash template referencing and @ViewChild
-        setTimeout(function () { return _this.refChange.emit(_this); }, 0);
+        //setTimeout(()=>this.refChange.emit(this), 0)
         this.createVideoResizer();
         this.startCapturingVideo()
             .then(function () { return setTimeout(function () { return _this.resize(); }, 10); })
@@ -145,12 +152,14 @@ var WebCamComponent = (function () {
         var videoOptions = {};
         if (this.options.video && isOb(this.options.video)) {
             Object.assign(videoOptions, this.options.video);
+            /* attempt to prevent bad videoOptions */
             if (videoOptions.width && isOb(videoOptions.width) && !Object.keys(videoOptions.width).length) {
                 delete videoOptions.width;
             }
             if (videoOptions.height && isOb(videoOptions.height) && !Object.keys(videoOptions.height).length) {
                 delete videoOptions.height;
             }
+            /* end: fix vid options */
         }
         if (this.facingMode) {
             videoOptions.facingMode = this.facingMode; //{exact:this.facingMode}
@@ -166,10 +175,7 @@ var WebCamComponent = (function () {
         return promise.then(function () { return videoOptions; });
     };
     //old method name (deprecated)
-    //old method name (deprecated)
-    WebCamComponent.prototype.resizeVideo = 
-    //old method name (deprecated)
-    function (maxAttempts) {
+    WebCamComponent.prototype.resizeVideo = function (maxAttempts) {
         if (maxAttempts === void 0) { maxAttempts = 4; }
         return this.resize(maxAttempts);
     };
@@ -264,54 +270,54 @@ var WebCamComponent = (function () {
      * Start capturing video stream
      * @returns {void}
      */
-    /**
-       * Start capturing video stream
-       * @returns {void}
-       */
-    WebCamComponent.prototype.startCapturingVideo = /**
-       * Start capturing video stream
-       * @returns {void}
-       */
-    function () {
+    WebCamComponent.prototype.startCapturingVideo = function () {
         if (!this.isFallback && this.isSupportWebRTC) {
             return this.onWebRTC();
         }
         return Promise.resolve(this.processSuccess());
     };
     WebCamComponent.prototype.getCanvas = function () {
-        return document.createElement('canvas');
+        var canvas = document.createElement('canvas');
+        var video = this.getVideoElm();
+        this.setCanvasWidth(canvas, video);
+        var ctx = canvas.getContext('2d');
+        if (this.reflect) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
+        ctx.drawImage(video, 0, 0);
+        return canvas;
+    };
+    WebCamComponent.prototype.getBlob = function () {
+        var _this = this;
+        return new Promise(function (res, rej) {
+            var canvas = _this.getCanvas();
+            canvas.toBlob(function (file) {
+                res(file);
+            }, _this.mime, 1);
+        });
+    };
+    WebCamComponent.prototype.getFile = function (fileName) {
+        return this.getBlob().then(function (file) { return blobToFile(file, fileName); });
     };
     /** returns promise . @mime - null=png . Also accepts image/jpeg */
-    /** returns promise . @mime - null=png . Also accepts image/jpeg */
-    WebCamComponent.prototype.getBase64 = /** returns promise . @mime - null=png . Also accepts image/jpeg */
-    function (mime) {
+    WebCamComponent.prototype.getBase64 = function (mime) {
         if (this.isFallback) {
             return this.flashPlayer.captureBase64(mime || this.mime);
             //return this.getFallbackBase64(mime)
         }
         else {
             var canvas = this.getCanvas();
-            var video = this.getVideoElm();
-            this.setCanvasWidth(canvas, video);
-            var ctx = canvas.getContext('2d');
-            if (this.reflect) {
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-            }
-            ctx.drawImage(video, 0, 0);
             return Promise.resolve(canvas.toDataURL(mime));
         }
     };
     WebCamComponent.prototype.setCanvasWidth = function (canvas, video) {
         var di = this.getVideoDimensions(video);
-        canvas = canvas || this.getCanvas();
         canvas.width = di.width;
         canvas.height = di.height;
     };
     /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
-    /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
-    WebCamComponent.prototype.createVidElmOb = /** older browsers (IE11) cannot dynamically apply most attribute changes to object elements. Use this method during fallback */
-    function () {
+    WebCamComponent.prototype.createVidElmOb = function () {
         var rtnElm = document.createElement('object');
         rtnElm.innerHTML = 'Video stream not available';
         rtnElm.setAttribute('type', 'application/x-shockwave-flash');
@@ -341,9 +347,7 @@ var WebCamComponent = (function () {
         this.flashPlayer = new videoHelp_1.Fallback(vidElm);
     };
     /** single image to FormData */
-    /** single image to FormData */
-    WebCamComponent.prototype.captureAsFormData = /** single image to FormData */
-    function (options) {
+    WebCamComponent.prototype.captureAsFormData = function (options) {
         options = options || {};
         return this.getBase64(options.mime)
             .then(function (base64) { return videoHelp_1.dataUriToFormData(base64, { fileName: options.fileName }); });
@@ -351,37 +355,70 @@ var WebCamComponent = (function () {
     WebCamComponent.prototype.dataUriToFormData = function (base64, options) {
         return videoHelp_1.dataUriToFormData(base64, { fileName: options.fileName });
     };
-    WebCamComponent.decorators = [
-        { type: core_1.Component, args: [{
-                    selector: 'ack-webcam',
-                    template: template,
-                    exportAs: 'webcam'
-                },] },
-    ];
-    /** @nocollapse */
-    WebCamComponent.ctorParameters = function () { return [
-        { type: platform_browser_1.DomSanitizer, },
-        { type: core_1.ElementRef, },
-    ]; };
-    WebCamComponent.propDecorators = {
-        "videoDevice": [{ type: core_1.Input },],
-        "videoDeviceId": [{ type: core_1.Input },],
-        "reflect": [{ type: core_1.Input },],
-        "facingMode": [{ type: core_1.Input },],
-        "mime": [{ type: core_1.Input },],
-        "useParentWidthHeight": [{ type: core_1.Input },],
-        "options": [{ type: core_1.Input },],
-        "success": [{ type: core_1.Output },],
-        "ref": [{ type: core_1.Input },],
-        "refChange": [{ type: core_1.Output },],
-        "error": [{ type: core_1.Input },],
-        "errorChange": [{ type: core_1.Output },],
-        "catcher": [{ type: core_1.Output, args: ['catch',] },],
-    };
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", MediaDeviceInfo)
+    ], WebCamComponent.prototype, "videoDevice", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", String)
+    ], WebCamComponent.prototype, "videoDeviceId", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], WebCamComponent.prototype, "reflect", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", String)
+    ], WebCamComponent.prototype, "facingMode", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], WebCamComponent.prototype, "mime", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Boolean)
+    ], WebCamComponent.prototype, "useParentWidthHeight", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Object)
+    ], WebCamComponent.prototype, "options", void 0);
+    __decorate([
+        core_1.Output(),
+        __metadata("design:type", core_1.EventEmitter)
+    ], WebCamComponent.prototype, "success", void 0);
+    __decorate([
+        core_1.Input(),
+        __metadata("design:type", Error)
+    ], WebCamComponent.prototype, "error", void 0);
+    __decorate([
+        core_1.Output(),
+        __metadata("design:type", core_1.EventEmitter)
+    ], WebCamComponent.prototype, "errorChange", void 0);
+    __decorate([
+        core_1.Output('catch'),
+        __metadata("design:type", core_1.EventEmitter)
+    ], WebCamComponent.prototype, "catcher", void 0);
+    WebCamComponent = __decorate([
+        core_1.Component({
+            selector: 'ack-webcam',
+            template: template
+        }),
+        __metadata("design:paramtypes", [platform_browser_1.DomSanitizer,
+            core_1.ElementRef])
+    ], WebCamComponent);
     return WebCamComponent;
 }());
 exports.WebCamComponent = WebCamComponent;
 function isOb(v) {
     return typeof (v) === 'object';
+}
+function blobToFile(theBlob, fileName) {
+    var b = theBlob;
+    //A Blob() is almost a File() - it's just missing the two properties below which we will add
+    b.lastModifiedDate = new Date();
+    b.name = fileName;
+    //Cast to a File() type
+    return theBlob;
 }
 //# sourceMappingURL=webcam.component.js.map

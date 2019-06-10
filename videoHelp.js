@@ -68,15 +68,15 @@ function drawImageArrayToCanvas(imgArray) {
             externData.pos += 4;
         }
         /*if (externData.pos >= 4 * width * height) {
-              ctx.putImageData(externData.imgData, 0, 0);
-              externData.pos = 0;
-            }*/
+          ctx.putImageData(externData.imgData, 0, 0);
+          externData.pos = 0;
+        }*/
     }
     ctx.putImageData(externData.imgData, 0, 0);
     return canvas;
 }
 exports.drawImageArrayToCanvas = drawImageArrayToCanvas;
-var Fallback = (function () {
+var Fallback = /** @class */ (function () {
     function Fallback(videoObject) {
         var _this = this;
         this.onImage = new core_1.EventEmitter();
@@ -119,17 +119,7 @@ var Fallback = (function () {
      * @param cam - Flash web camera instance
      * @returns {void}
      */
-    /**
-       * Add <param>'s into fallback object
-       * @param cam - Flash web camera instance
-       * @returns {void}
-       */
-    Fallback.prototype.addFallbackParams = /**
-       * Add <param>'s into fallback object
-       * @param cam - Flash web camera instance
-       * @returns {void}
-       */
-    function (options) {
+    Fallback.prototype.addFallbackParams = function (options) {
         var paramFlashVars = document.createElement('param');
         paramFlashVars.name = 'FlashVars';
         paramFlashVars.value = 'mode=' + options.fallbackMode + '&amp;quality=' + options.fallbackQuality;
