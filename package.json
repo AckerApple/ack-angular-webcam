@@ -5,17 +5,22 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
+    "stats": "webpack-bundle-analyzer example/www/stats-es5.json",
+    "stats:html": "webpack-bundle-analyzer example/www/stats-es5.json --mode static --report example/www/stats.html --no-open",
     "build:templates": "ack-pug-bundler example/app example/app --outFileExt template.ts --outType ts --oneToOne",
     "start": "ack-reload -d example/www -b",
     "test:old": "karma start --sr",
-    "watch:js": "ack-webpack ./example/app/index.ts example/www/index.js --project example/app/tsconfig.json --modules . --watch --browser",
+    
+    "watch:ng": "ng serve example --open",
+
     "watch:dist": "watch \"npm-run-all build:dist\" src/",
-    "watch": "npm-run-all --parallel watch:dist watch:js watch:templates",
+    "watch": "npm-run-all --parallel watch:dist watch:ng watch:templates",
     "watch:templates": "npm run build:templates -- --watch",
     "build:dist": "ngc --declaration --project src",
     "ack-webpack": "ack-webpack",
-    "build": "npm-run-all build:templates compile:dist:package build:dist build:js",
-    "build:js": "node --max-old-space-size=8192 ./node_modules/.bin/ng build --app=example --sourcemaps=true --output-hashing=all",
+    "build": "npm-run-all build:templates compile:dist:package build:dist build:example stats",
+    "build:example": "ng build example --prod --output-hashing=none --stats-json",
+    "_build:js": "node --max-old-space-size=8192 ./node_modules/.bin/ng build --app=example --sourcemaps=true --output-hashing=all",
     "compile:dist:package": "node scripts/update-dist-package.js",
     "test": "ng test --browser PhantomJS --single-run",
     "test:watch": "ng test"
@@ -39,6 +44,7 @@
     }
   ],
   "devDependencies": {
+    "@angular-devkit/build-angular": "~0.800.0",
     "@angular/cli": "^8.0.1",
     "@angular/common": "^8.0.0",
     "@angular/compiler": "^8.0.0",
@@ -48,13 +54,15 @@
     "@angular/platform-browser-dynamic": "^8.0.0",
     "ack-pug-bundler": "^1.4.7",
     "classlist-polyfill": "^1.2.0",
+    "codelyzer": "^5.0.1",
     "core-js": "^3.1.3",
     "minimatch": "^3.0.4",
     "npm-run-all": "^4.1.2",
     "reflect-metadata": "^0.1.10",
     "rxjs": "^6.5.2",
-    "typescript": "3.2.2",
-    "zone.js": "^0.9.1"
+    "typescript": "^3.4.5",
+    "webpack-bundle-analyzer": "^3.3.2",
+    "zone.js": "~0.9.1"
   },
   "bugs": {
     "url": "https://github.com/ackerapple/ack-angular-webcam/issues"
@@ -68,5 +76,8 @@
   "scriptsInfo": {
     "test": "Tests angular app using karama and jasmine",
     "test:watch": "Opens local browser to test angular app"
+  },
+  "dependencies": {
+    "tslib": "^1.9.0"
   }
 }

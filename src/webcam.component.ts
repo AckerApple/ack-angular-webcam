@@ -1,5 +1,4 @@
-import * as a from './audioTest'
-console.log("a",a)
+//import * as a from './audioTest'
 
 import { Component, ElementRef, Input, Output, EventEmitter } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'

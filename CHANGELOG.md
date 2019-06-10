@@ -4,6 +4,8 @@ All notable changes to this project will be documented here.
 ## [1.10.0] - 2019-05-30
 - removed [(ref)]="webcam" now use standard angular #webcam template referencing
 - added webcam.getFile() promise
+- updated example page
+- Built with Angular 8
 
 ## [1.9.2] - 2018-03-28
 - Fixed Android camera switching. A stop must occur before changing cameras

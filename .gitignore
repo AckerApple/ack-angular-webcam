@@ -1,3 +1,4 @@
+stats-*.jsonstats.json
 aot/
 .DS_Store
 styles.css.map

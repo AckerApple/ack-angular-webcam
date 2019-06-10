@@ -7,7 +7,7 @@ const setup = {
   frameworks: [
     'jasmine',
     //'karma-typescript',
-    '@angular/cli'
+    '@angular-devkit/build-angular'
   ],
 
 //preprocessors: {
@@ -31,7 +31,7 @@ const setup = {
 }
 
 //setup.preprocessors = {
-//  '**/*.spec.ts': ['@angular/cli']
+//  '**/*.spec.ts': ['@angular-devkit/build-angular']
 //}
 
 //setup.files = [
@@ -40,7 +40,7 @@ const setup = {
 
 /*
 setup.preprocessors = {
-  './test/test.ts': ['@angular/cli']
+  './test/test.ts': ['@angular-devkit/build-angular']
 }
 setup.files = [
   {pattern: './test/test.ts', watched: false}
@@ -49,10 +49,7 @@ setup.files = [
 //setup.files = [{pattern: '**/*.spec.ts', included: true}]
 //setup.files = ['src/index']
 //setup.files = ['src/**/*.spec.ts']
-/*setup.angularCli = {
-  config: './angular-cli.json',
-  environment: 'dev'
-}*/
+/*setup.*/
 
 if( browserArg=='PhantomJS' ){
   setup.browsers.push('Chrome')
@@ -65,7 +62,7 @@ if( browserArg=='PhantomJS' ){
   setup.customLaunchers = require('./test/sauce-browsers').customLaunchers()
 }
 
-setup.plugins.push( require('@angular/cli/plugins/karma') )
+setup.plugins.push( require('@angular-devkit/build-angular/plugins/karma') )
 
 module.exports = function (config) {
   setup.logLevel = config.LOG_INFO

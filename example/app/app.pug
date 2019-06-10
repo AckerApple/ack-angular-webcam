@@ -1,6 +1,10 @@
-// devices
-div(style="position:absolute;right:5px;color:#999999;")
-  |v{{ version || '0.0.0' }}
+div(
+  style="position:absolute;right:5px;"
+)
+  span(style="color:#999999;")
+    |v{{ version || '0.0.0' }}
+  |&nbsp;-&nbsp;
+  a(href="stats.html") stats
 
 ng-container(*ngIf="changeConfig")
   ack-media-devices(
@@ -138,128 +142,128 @@ table(
           style = "padding:.5em;font-size:1em;width:100%;height:100%;color:red;"
         )
           |{{ cameras[index].error.name+'\r\r' }}{{ cameras[index].error.message+'\r\r' }}{{ getErrorJson(cameras[index].error) | json }}
-    tr(*ngIf="!cameras[index].error")
-      td(
-        *ngIf   = "!cameras[index].destroy"
-        colspan = "3"
-        valign  = "top"
-      )
-        ack-webcam(
-          #webcam = ""
-          "[videoDeviceId]" = "cameras[index].videoDeviceId"
-          "[facingMode]"    = "cameras[index].facingMode"
-          "[reflect]"       = "cameras[index].reflect"
-          "[(error)]"       = "cameras[index].error"
-          "(errorChange)"   = "logerror($event)"
-          "[options]"       = "cameras[index].options"
-          "(success)"       = "onSuccess($event)"
-          style             = "width:100%;height:100%;display:block;text-align:center;"
+    ng-container(*ngIf="!cameras[index].error")
+      tr
+        td(
+          colspan = "3"
+          valign  = "top"
         )
-    tr(style="height:60px")
-      td(colspan="3" style="text-align:center")
-        div(*ngIf="cameras[index].resize")
-          div
-            |width:
-            input(
-              type      = "number"
-              "(keyup)" = "$event.target.value ? cameras[index].options.width=$event.target.value && webcam.resize() : null"
-              "[placeholder]" = "webcam.sets.element.width"
-            )
-            |px
-            |&nbsp;&nbsp;x&nbsp;&nbsp;
-            |height:
-            input(
-              type      = "number"
-              "(keyup)" = "$event.target.value ? cameras[index].options.height=$event.target.value && webcam.resize() : null"
-              "[placeholder]" = "webcam.sets.element.height"
-            )
-            |px
+          ack-webcam(
+            #webcam = ""
+            "[videoDeviceId]" = "cameras[index].videoDeviceId"
+            "[facingMode]"    = "cameras[index].facingMode"
+            "[reflect]"       = "cameras[index].reflect"
+            "[(error)]"       = "cameras[index].error"
+            "(errorChange)"   = "logerror($event)"
+            "[options]"       = "cameras[index].options"
+            "(success)"       = "onSuccess($event)"
+            style             = "width:100%;height:100%;display:block;text-align:center;"
+          )
+      tr(style="height:60px")
+        td(colspan="3" style="text-align:center")
+          div(*ngIf="cameras[index].resize")
+            div
+              |width:
+              input(
+                type      = "number"
+                "(keyup)" = "$event.target.value ? cameras[index].options.width=$event.target.value && webcam.resize() : null"
+                "[placeholder]" = "webcam.sets.element.width"
+              )
+              |px
+              |&nbsp;&nbsp;x&nbsp;&nbsp;
+              |height:
+              input(
+                type      = "number"
+                "(keyup)" = "$event.target.value ? cameras[index].options.height=$event.target.value && webcam.resize() : null"
+                "[placeholder]" = "webcam.sets.element.height"
+              )
+              |px
 
-          br
+            br
 
-          table(align="center")
-            tr
-              td
-              td Video Width
-              td  Video Height
-            tr
-              td min:
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.min=$event.target.value && webcam.redraw() : null"
-                )
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.min=$event.target.value && webcam.redraw() : null"
-                )
-            tr
-              td ideal:
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value && webcam.redraw() : null"
-                )
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value && webcam.redraw() : null"
-                )
-            tr
-              td exact:
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.exact=$event.target.value && webcam.redraw() : null"
-                )
-              td
-                input(
-                  type        = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.height.exact=$event.target.value && webcam.redraw() : null"
-                )
-            tr
-              td max:
-              td
-                input(
-                  type      = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.max=$event.target.value && webcam.redraw() : null"
-                )
-              td
-                input(
-                  type        = "number"
-                  "(keyup)" = "$event.target.value ? cameras[index].options.video.width.max=$event.target.value && webcam.redraw() : null"
-                )
-        button(
-          "(click)" = "cameras[index].reflect=!cameras[index].reflect"
-          style     = "padding:.5em;font-size:1.1em;"
-          "[style.background-color]" = "cameras[index].reflect ? '#999' : null"
-        ) Reflect{{ cameras[index].reflect ? 'ing' : ''}}
-        button(
-          *ngIf     = "webcam"
-          "(click)" = "captureBase64(webcam)"
-          style     = "padding:.5em;font-size:1.1em;"
-        ) Capture
-        button(
-          "(click)" = "cameras.splice(index,1)"
-          style     = "padding:.5em;font-size:1.1em;"
-        ) Destroy
-        button(
-          "(click)" = "changeConfig=camConfig"
-          style     = "padding:.5em;font-size:1.1em;"
-        ) Devices
-        button(
-          "(click)" = "cameras[index].resize=!cameras[index].resize"
-          style     = "padding:.5em;font-size:1.1em;"
-          "[style.background-color]" = "cameras[index].resize ? '#999' : null"
-        ) Sizing
-        button(
-          "(click)" = "cameras[index].playing=cameras[index].playing?0:1;cameras[index].playing ? webcam.stop() : webcam.play()"
-          style     = "padding:.5em;font-size:1.1em;"
-          "[style.background-color]" = "cameras[index].resize ? '#999' : null"
-        ) Stop/Starts
-      td
-      td
+            table(align="center")
+              tr
+                td
+                td Video Width
+                td  Video Height
+              tr
+                td min:
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.min=$event.target.value && webcam.redraw() : null"
+                  )
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.min=$event.target.value && webcam.redraw() : null"
+                  )
+              tr
+                td ideal:
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value && webcam.redraw() : null"
+                  )
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.ideal=$event.target.value && webcam.redraw() : null"
+                  )
+              tr
+                td exact:
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.exact=$event.target.value && webcam.redraw() : null"
+                  )
+                td
+                  input(
+                    type        = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.height.exact=$event.target.value && webcam.redraw() : null"
+                  )
+              tr
+                td max:
+                td
+                  input(
+                    type      = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.max=$event.target.value && webcam.redraw() : null"
+                  )
+                td
+                  input(
+                    type        = "number"
+                    "(keyup)" = "$event.target.value ? cameras[index].options.video.width.max=$event.target.value && webcam.redraw() : null"
+                  )
+          button(
+            "(click)" = "cameras[index].reflect=!cameras[index].reflect"
+            style     = "padding:.5em;font-size:1.1em;"
+            "[style.background-color]" = "cameras[index].reflect ? '#999' : null"
+          ) Reflect{{ cameras[index].reflect ? 'ing' : ''}}
+          button(
+            *ngIf     = "webcam"
+            "(click)" = "captureBase64(webcam)"
+            style     = "padding:.5em;font-size:1.1em;"
+          ) Capture
+          button(
+            "(click)" = "cameras.splice(index,1)"
+            style     = "padding:.5em;font-size:1.1em;"
+          ) Destroy
+          button(
+            "(click)" = "changeConfig=camConfig"
+            style     = "padding:.5em;font-size:1.1em;"
+          ) Devices
+          button(
+            "(click)" = "cameras[index].resize=!cameras[index].resize"
+            style     = "padding:.5em;font-size:1.1em;"
+            "[style.background-color]" = "cameras[index].resize ? '#999' : null"
+          ) Sizing
+          button(
+            "(click)" = "cameras[index].playing=cameras[index].playing?0:1;cameras[index].playing ? webcam.stop() : webcam.play()"
+            style     = "padding:.5em;font-size:1.1em;"
+            "[style.background-color]" = "cameras[index].resize ? '#999' : null"
+          ) Stop/Starts
+        td
+        td
   tr(style="height:60px")
     td(colspan="3")
       button(
